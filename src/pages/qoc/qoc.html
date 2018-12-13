@@ -1,0 +1,64 @@
+<!--
+  Generated template for the QocPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>QOC einfügen</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <ion-grid>
+        <ion-col >
+            <ion-row >
+                    <h4 ion-text color="danger">{{textQOC}}</h4>
+            </ion-row>
+            <ion-row >            
+                <ion-item>
+                    <ion-label color="primary" floating>Phrase</ion-label>
+                    <ion-input  align-items-center type="text" [(ngModel)]="phrase"></ion-input>
+                </ion-item>
+            </ion-row>
+            <ion-row >            
+                <ion-item>
+                    <ion-label color="secondary" floating>Process String</ion-label>
+                    <ion-input  align-items-center type="text" [(ngModel)]="processString"></ion-input>
+                </ion-item>
+            </ion-row>
+            <ion-row >            
+                <ion-item>
+                    <ion-label color="primary" floating>Process number</ion-label>
+                    <ion-input  align-items-center type="number" [(ngModel)]="pNumber"></ion-input>
+                </ion-item>
+            </ion-row>
+            <ion-row >            
+                <ion-item>
+                    <ion-label color="primary" floating>Question einfügen</ion-label>
+                    <ion-input  align-items-center type="text" [(ngModel)]="inputQuestion"></ion-input>
+                </ion-item>
+            </ion-row>
+            <ion-row >            
+                <ion-item>
+                    <ion-label color="primary" floating>Option einfügen</ion-label>
+                    <ion-input  align-items-center type="text" [(ngModel)]="inputOption"></ion-input>
+                </ion-item>
+            </ion-row>
+            <ion-row >
+                <ion-item>
+                    <ion-label color="primary" floating>Criteria einfügen</ion-label>
+                    <ion-input  align-items-center type="number" [(ngModel)]="inputCriteria"></ion-input>
+                </ion-item>
+            </ion-row>
+            <ion-row >
+                <button ion-button (click)="addQOC()">QOC in Liste einfügen</button>
+                <button ion-button (click)="sendQOC()">Senden</button>
+            </ion-row>
+        </ion-col>
+    </ion-grid>
+</ion-content>

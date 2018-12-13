@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>
+      Business processes
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding height="50%" width="50%">
+  <ion-grid >
+    <ion-row text-center align-items-center> 
+      <ion-col>
+          <button color="danger" ion-button large (click)="openEvaluateQoc()">Prozess auswerten</button>
+          <button ion-button large (click)="showLastProcess()">Letzte Prozessergebnisse</button>
+      </ion-col>
+    </ion-row>
+    <ion-row text-center align-items-center >
+        <ion-col>
+          <button ion-button large (click)="openCreateProcess()">Prozess erstellen</button>
+          <button ion-button large (click)="openDeleteProcess()">Prozess löschen</button>
+        </ion-col>
+    </ion-row>
+    <ion-row text-center align-items-center>
+      <ion-col>
+        <button ion-button large (click)="createAccount()">Account erstellen</button>
+        <button ion-button large (click)="openAddQoc()">QOC Einfügen</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+  
+</ion-content>
