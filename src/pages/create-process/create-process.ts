@@ -68,17 +68,14 @@ export class CreateProcessPage {
       case tx:DataTransaction =>{`;
 
     for(let i=0; i<this.list.length;i++){
-      for(let j=0; j<this.list.length;j++){
-        scriptBodyNew+= `let l${i}${j} = if(sigVerify(tx.bodyBytes, tx.proofs[${j}], base58'${this.list[i]}')) then 1 else 0 ;`;
-      }
+        scriptBodyNew+= `let l${i} = if(sigVerify(tx.bodyBytes, tx.proofs[${i}], base58'${this.list[i]}')) then 1 else 0 ;`;
     }
 
     scriptBodyNew += `(`;
 
     for(let i=0; i<this.list.length;i++){
-      for(let j=0; j<this.list.length;j++){
-        scriptBodyNew += (j == this.list.length-1 && i == this.list.length-1) ? ` l${i}${j}`:` l${i}${j} +` ;
-      }
+        scriptBodyNew += (i == this.list.length-1 && i == this.list.length-1) ? ` l${i}`:` l${i} +` ;
+      
     }
 
     scriptBodyNew += `) == ` + this.list.length + `}case _ =>  throw("State should be a data transaction")}`;
