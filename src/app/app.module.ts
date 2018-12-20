@@ -10,6 +10,7 @@ import { QocPage } from '../pages/qoc/qoc';
 import { CreateProcessPage } from '../pages/create-process/create-process';
 import { DeleteProcessPage } from '../pages/delete-process/delete-process';
 import { EvaluatePage } from '../pages/evaluate/evaluate';
+import { TestServiceProvider } from '../providers/test-service/test-service';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { EvaluatePage } from '../pages/evaluate/evaluate';
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    TestServiceProvider
   ]
 })
 export class AppModule {}

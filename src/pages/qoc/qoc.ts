@@ -156,7 +156,7 @@ export class QocPage {
       fee:1000000
     };
 
-    /** prepare QOC data transaction  object*/
+    /** prepare QOC data transaction object*/
     const dataTx = await Waves.tools.createTransaction("data", dataObj);
     
     /** add proof to QOC data transaction  */
