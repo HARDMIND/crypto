@@ -11,6 +11,7 @@ import { CreateProcessPage } from '../pages/create-process/create-process';
 import { DeleteProcessPage } from '../pages/delete-process/delete-process';
 import { EvaluatePage } from '../pages/evaluate/evaluate';
 import { TestServiceProvider } from '../providers/test-service/test-service';
+import { PagesProvider } from '../providers/pages/pages';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { TestServiceProvider } from '../providers/test-service/test-service';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    TestServiceProvider
+    // TestServiceProvider,
+    PagesProvider
   ]
 })
 export class AppModule {}

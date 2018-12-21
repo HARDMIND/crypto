@@ -3,7 +3,7 @@
 
     <ion-title>
       Business processes
-      
+
     </ion-title>
   </ion-navbar>
   <button ion-button menuToggle icon-only>
@@ -13,8 +13,17 @@
 
 
 <ion-content padding height="50%" width="50%">
+
+  <ion-list>
+    <ion-item>
+      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
+        {{p.title}}
+      </button>
+    </ion-item>
+  </ion-list>
+
   <ion-grid >
-    <ion-row text-center align-items-center> 
+    <ion-row text-center align-items-center>
       <ion-col>
           <button color="danger" ion-button large (click)="openEvaluateQoc()">Prozess auswerten</button>
       </ion-col>
@@ -34,5 +43,5 @@
   </ion-grid>
 
 
-  
+
 </ion-content>
