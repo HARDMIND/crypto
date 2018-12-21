@@ -23,6 +23,7 @@ export class MyApp {
       statusBar.styleDefault();
       splashScreen.hide();
     });
+
     this.pages = [
       { title: 'Home', component: HomePage },
       { title: 'Create Process', component: CreateProcessPage },
