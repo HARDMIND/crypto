@@ -25,6 +25,8 @@ export class DeleteProcessPage {
   }
   
   async deleteScriptFromAcc(){
+    this.phrase = "amazing hazard method law ribbon bless crucial author voyage filter usual stool wise guess tiger";
+
     const WavesAPI = require('@waves/waves-api');
     const Waves = WavesAPI.create(WavesAPI.TESTNET_CONFIG);
 
@@ -34,18 +36,19 @@ export class DeleteProcessPage {
       senderPublicKey: seed.keyPair.publicKey,
       sender:seed.address,
       fee:1000000,
-      script:"base64:null"
+      script:"base64:"
     };
 
     // /** create script transaction */
      const setScriptTx = await Waves.tools.createTransaction("setScript", setScriptObj);
+     setScriptTx.addProof("5K1V7LKrjz9sBxVLinEUpAzEHiPf5p4nPLaDuTgU6hFy");
      const txJSON = await setScriptTx.getJSON();
      const setScriptResult = await Waves.API.Node.transactions.rawBroadcast(txJSON);
 
     /** return result */
     const alert = this.alertCtrl.create({
       title: 'Output',
-      subTitle: "Prozess gelöscht",
+      subTitle: "Prozess gelöscht" ,
       buttons: ['Check']
     });
 

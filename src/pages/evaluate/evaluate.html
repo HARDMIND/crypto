@@ -17,16 +17,12 @@
     <ion-grid>
         <ion-col >
             <ion-row >
-                    <h4 ion-text color="danger">{{textDTX}}</h4>
-            </ion-row>
-            <ion-row >
                 <ion-item>
-                    <ion-label color="primary" floating>Data Transaction ID</ion-label>
-                    <ion-input  align-items-center type="text" [(ngModel)]="dataTransactionId"></ion-input>
+                    <ion-label color="primary" floating>Address</ion-label>
+                    <ion-input  align-items-center type="text" [(ngModel)]="processAddress"></ion-input>
                 </ion-item>
             </ion-row>
             <ion-row >
-                <button ion-button (click)="addDataTransactionID()">Einfügen</button>
                 <button ion-button (click)="evaluateData()">Auswerten</button>
             </ion-row>
         </ion-col>

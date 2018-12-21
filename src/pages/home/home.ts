@@ -56,57 +56,5 @@ export class HomePage {
   openEvaluateQoc(){
     this.navCtrl.push(EvaluatePage);
   }
-
-  /******************** shows last evaluated process *******************/
-  showLastProcess(){
-    let alert = this.alertCtrl.create({
-      title: 'Letzte Prozessergebnisse',
-      inputs: [
-        {
-          name: 'address',
-          placeholder: 'Address'
-        },
-        {
-          name: 'id',
-          placeholder: 'Data Transaction Id'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Abbrechen',
-          role: 'Abbrechen',
-          handler: data => {
-            console.log('Abbrechen clicked');
-          }
-        },
-        {
-          text: 'Senden',
-          handler: data => {
-            this.getDataByTxId(data.address, data.key);
-          }
-        }
-      ]
-    });
-    alert.present();
-  }
-
-  async getDataByTxId(address,key){
-    const baseUrl = 'https://pool.testnet.wavesnodes.com/';
-    const queryString = '/addresses/data/' + address+ '/' + key;
-    var options = {
-        uri: baseUrl + queryString,
-    };
-    
-    const result = await request.get(options);
-
-    /** return result */
-    const alert = this.alertCtrl.create({
-      title: 'Restult',
-      subTitle: "Result " + address + " " +key ,
-      buttons: ['Ok']
-    });
-
-    alert.present();
-  }
   
 }

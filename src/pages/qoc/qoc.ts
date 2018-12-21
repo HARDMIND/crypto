@@ -16,14 +16,13 @@ declare var require: any;
   templateUrl: 'qoc.html',
 })
 export class QocPage {
-  public phrase:any;
+  public senderPhrase:any;
+  public processPhrase:any;
   public qocList = [];
   public textQOC:any;
-  public pNumber:any;
   public inputQuestion:any;
   public inputOption:any;
   public inputCriteria:any;
-  public processString : any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,public alertCtrl: AlertController) {
   }
@@ -44,15 +43,19 @@ export class QocPage {
       alert.present();
       return;
     }
+    const WavesAPI = require('@waves/waves-api');
+    const Waves = WavesAPI.create(WavesAPI.TESTNET_CONFIG);
+
+    // /** create process seed from phrase */
+    const senderPhrase =Waves.Seed.fromExistingPhrase(this.senderPhrase) ;
 
     let counter = (this.qocList.length >= 3) ? this.qocList.length / 3 : 0;
 
-    /** QOC format : question + QuestionCounter + ProcessNumber
+    /** QOC format : question + QuestionCounter 
      *  QuestionCounter = 3 digits after question/option/criteria
-     *  ProcessNumber = several digits after QuestionCounter
      *  example : 
-     *  question 001 5 => question0015
-     *  option 001 5 => option0015
+     *  question 001  => question001
+     *  option 001  => option001
      */
     let counterChange = counter.toString();
 
@@ -66,17 +69,17 @@ export class QocPage {
 
     /** get content from input  */
     let qInput = {
-      "key":"question" + counterChange+this.pNumber,
+      "key":"question" + counterChange + senderPhrase.keyPair.publicKey,
       "type":"string",
       "value":this.inputQuestion
     }
     let oInput = {
-      "key":"option" + counterChange+this.pNumber,
+      "key":"option" + counterChange + senderPhrase.keyPair.publicKey,
       "type":"string",
       "value":this.inputOption
     }
     let cInput = {
-      "key":"criteria" + counterChange+this.pNumber,
+      "key":"criteria" + counterChange + senderPhrase.keyPair.publicKey,
       "type":"string",
       "value":this.inputCriteria
     }
@@ -103,24 +106,13 @@ export class QocPage {
 
   /******************** Send QOC Data  *******************/
   async sendQOC(){
+
     /** validation  */
-    if(this.phrase == null || this.phrase.length < 15){
+    if(this.senderPhrase == null || this.senderPhrase.length < 15 || this.processPhrase == null || this.processPhrase.length < 15){
       /** return result */
       const alert = this.alertCtrl.create({
         title: 'Error',
-        subTitle: "Need phrase or phrase to short (min length 15)",
-        buttons: ['OK']
-      });
-
-      alert.present();
-      return;
-    }
-
-    if(this.processString == "" || this.processString == null){
-      /** return result */
-      const alert = this.alertCtrl.create({
-        title: 'Error',
-        subTitle: "Need json String",
+        subTitle: "Need processPhrase / senderPhrase  or phrase is to short (min length 15)",
         buttons: ['OK']
       });
 
@@ -145,14 +137,18 @@ export class QocPage {
     const WavesAPI = require('@waves/waves-api');
     const Waves = WavesAPI.create(WavesAPI.TESTNET_CONFIG);
 
-    // /** create seed from phrase */
-    const seed = (this.phrase != null) ? Waves.Seed.fromExistingPhrase(this.phrase) : "";
+    // /** create process seed from phrase */
+    const seedProcess =Waves.Seed.fromExistingPhrase(this.processPhrase) ;
+   
+   
+    /** create sender seed from phrase */
+    const seedSender = Waves.Seed.fromExistingPhrase(this.senderPhrase) ;
 
     /** create qoc data object */
     let dataObj ={
       data: this.qocList,
-      senderPublicKey: seed.keyPair.publicKey,
-      sender:seed.address,
+      senderPublicKey: seedProcess.keyPair.publicKey,
+      sender: seedProcess.address,
       fee:1000000
     };
 
@@ -160,31 +156,18 @@ export class QocPage {
     const dataTx = await Waves.tools.createTransaction("data", dataObj);
     
     /** add proof to QOC data transaction  */
-    dataTx.addProof(seed.keyPair.privateKey);
+    dataTx.addProof(seedSender.keyPair.privateKey);
 
     /** create json from  dataTx object */
     const txJSON = await dataTx.getJSON();
 
     /** send data  */
-    const setScriptResult = await Waves.API.Node.transactions.rawBroadcast(txJSON);
-
-    /** created jsonObj from processString */
-    let processObj = JSON.parse(this.processString);
-
-    /** add qoc data to array */
-    //processObj.data = processObj.data.concat(this.qocList);
-
-    /** add proof to jsonObj */
-    const dataTxJson = await Waves.tools.createTransaction("data", processObj);
-   
-
-    dataTxJson.addProof(seed.keyPair.privateKey);
-    const transferTxJSON = await dataTxJson.getJSON();
+    const transactionresult = await Waves.API.Node.transactions.rawBroadcast(txJSON);
 
     /** return result */
     const alert = this.alertCtrl.create({
       title: 'Output',
-      subTitle: "QOC Data eingefügt \n" + "<p>" +JSON.stringify(transferTxJSON) + "</p>",
+      subTitle: "QOC Data eingefügt \n" ,
       buttons: ['Check']
     });
 

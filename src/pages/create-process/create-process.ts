@@ -68,7 +68,7 @@ export class CreateProcessPage {
       case tx:DataTransaction =>{`;
 
     for(let i=0; i<this.list.length;i++){
-        scriptBodyNew+= `let l${i} = if(sigVerify(tx.bodyBytes, tx.proofs[${i}], base58'${this.list[i]}')) then 1 else 0 ;`;
+        scriptBodyNew+= `let l${i} = if(sigVerify(tx.bodyBytes, tx.proofs[0], base58'${this.list[i]}')) then 1 else 0 ;`;
     }
 
     scriptBodyNew += `(`;
@@ -78,7 +78,7 @@ export class CreateProcessPage {
       
     }
 
-    scriptBodyNew += `) == ` + this.list.length + `}case _ =>  throw("State should be a data transaction")}`;
+    scriptBodyNew += `) == 1 }case _ =>  throw("State should be a data transaction")}`;
 
     /** compile script */
     const compiledScript = await Waves.API.Node.utils.script.compile(scriptBodyNew);
@@ -103,24 +103,12 @@ export class CreateProcessPage {
     /** send transaction with script  */
     const setScriptResult = await Waves.API.Node.transactions.rawBroadcast(txJSON);
 
-    /** Create json data obj to send to other members: prepare jsonObj */
-    let dataObj ={
-      data: [],
-      senderPublicKey: seed.keyPair.publicKey,
-      sender:seed.address,
-      fee:1000000
-    };
+    // json to string sample: JSON.stringify(txJSON)
 
-    /** Create json data obj to send to other members: create DataTransaction and convert it to JSON obj */
-    const dataTxJson = await Waves.tools.createTransaction("data", dataObj);
-    dataTxJson.addProof(seed.keyPair.privateKey);
-    const transferTxJSONForOtherMembers = await dataTxJson.getJSON();
-
-    /** return result with data transaction JSON as String for other members*/
     const alert = this.alertCtrl.create({
       title: 'Prozess erstellt!',
       cssClass: 'create-process',
-      subTitle: "Sende an weitere Mitglieder " + "<p>" + JSON.stringify(transferTxJSONForOtherMembers) + "</p>",
+      subTitle: "Prozess erstellt" ,
       buttons: ['Ok']
     });
 
