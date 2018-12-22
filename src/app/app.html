@@ -1,21 +1,39 @@
-<ion-menu [content]="content">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Menu</ion-title>
-      </ion-toolbar>
-    </ion-header>
+<!--<ion-menu [content]="content">-->
+    <!--<ion-header>-->
+      <!--<ion-toolbar>-->
+        <!--<ion-title>Menu</ion-title>-->
+      <!--</ion-toolbar>-->
+    <!--</ion-header>-->
 
-    <ion-content>
-      <ion-list>
-        <ion-item>
-        <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-          {{p.title}}
-        </button>
-        </ion-item>
-      </ion-list>
-    </ion-content>
+    <!--<ion-content>-->
+      <!--<ion-list>-->
+        <!--<ion-item>-->
+        <!--<button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">-->
+          <!--{{p.title}}-->
+        <!--</button>-->
+        <!--</ion-item>-->
+      <!--</ion-list>-->
+    <!--</ion-content>-->
 
-  </ion-menu>
+  <!--</ion-menu>-->
+
+<!--Material Design Menu-->
+<ion-menu [content]="content" id="menu-material">
+  <ion-content>
+    <div class="menu-header">
+      <!--material-design-background-->
+      <!--<img class="user-avatar round" [src]="chosenPicture || placeholder" onerror="this.src='assets/img/avatar/girl-avatar.png'"/>-->
+      <p class="name">Max Mustermann</p>
+      <p class="e-mail">max@mustermann.de</p>
+    </div>
+    <ion-list no-lines>
+      <button menuClose="left" ion-item detail-none *ngFor="let p of pages" (click)="openPage(p)">
+        <ion-icon [name]="p.icon" item-left></ion-icon>
+        {{p.title}}
+      </button>
+    </ion-list>
+  </ion-content>
+</ion-menu>
 
 
 <ion-nav [root]="rootPage"  #content ></ion-nav>

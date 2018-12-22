@@ -1,17 +1,11 @@
-<!--
-  Generated template for the CreateProcessPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
   <ion-navbar>
-    <ion-title>Prozess erstellen</ion-title>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Create Script</ion-title>
   </ion-navbar>
-
 </ion-header>
-
 
 <ion-content padding>
   <ion-grid>
@@ -19,7 +13,7 @@
       <ion-row >
         <h4 ion-text color="danger">{{textPk}}</h4>
       </ion-row>
-      
+
       <ion-row >
           <ion-item text-center align-items-center>
               <ion-label color="primary" floating>Phrase</ion-label>
@@ -27,19 +21,19 @@
           </ion-item>
       </ion-row>
 
-      <ion-row >      
+      <ion-row >
         <ion-item text-center align-items-center>
           <ion-label color="primary" floating>Public Key</ion-label>
           <ion-input text-center align-items-center type="text" [(ngModel)]="pk"></ion-input>
         </ion-item>
       </ion-row>
       <ion-row >
-        <ion-item text-center align-items-center> 
+        <ion-item text-center align-items-center>
             <button  ion-button (click)="addPublicKey()">Füge PublicKey hinzu</button>
         </ion-item>
       </ion-row>
       <ion-row >
-          <ion-item text-center align-items-center> 
+          <ion-item text-center align-items-center>
               <button ion-button (click)="addScriptToAcc()">Erstelle Prozess</button>
           </ion-item>
         </ion-row>
@@ -47,6 +41,6 @@
   </ion-grid>
 
 
-    
-    
+
+
 </ion-content>
