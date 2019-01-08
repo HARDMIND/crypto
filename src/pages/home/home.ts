@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { QocPage} from '../qoc/qoc';
-import { AlertController } from 'ionic-angular';
 import { CreateProcessPage } from '../create-process/create-process';
 import { DeleteProcessPage } from '../delete-process/delete-process';
 import { EvaluatePage } from '../evaluate/evaluate';
-import * as request from "request";
-declare var require: any;
+import { MessagesProvider } from '../../providers/messages/messages';
+import { WavesProvider } from '../../providers/waves/waves';
 
 @Component({
   selector: 'page-home',
@@ -14,27 +13,20 @@ declare var require: any;
 })
 export class HomePage {
 
-  constructor(public navCtrl: NavController,public alertCtrl: AlertController) {
-
-  }
+  constructor(public navCtrl: NavController,
+    private messageProvider:MessagesProvider,
+    private wavesProvider:WavesProvider) {}
   
   /******************** create new waves acc  *******************/
   createAccount(){
-    const WavesAPI = require('@waves/waves-api');
-    const Waves = WavesAPI.create(WavesAPI.TESTNET_CONFIG);
-    const seed = Waves.Seed.create();
+    const seed = this.wavesProvider.createAccount();
 
     /** generate account and show phrase */
-    const alert = this.alertCtrl.create({
-      title: 'Testnet Acount created!',
-      subTitle: '<p>Phrase: ' + seed.phrase + "</p>"+
-                "<p>Address: " + seed.address +  "</p>"+
-                '<p>PublicKey: ' + seed.keyPair.publicKey +"</p>"+
-                "<p>PrivateKey: " + seed.keyPair.privateKey,
-      buttons: ['Check']
-    });
-
-    alert.present();
+    var message = '<p>Phrase: ' + seed.phrase + "</p>"+
+                  "<p>Address: " + seed.address +  "</p>"+
+                  '<p>PublicKey: ' + seed.keyPair.publicKey +"</p>"+
+                  "<p>PrivateKey: " + seed.keyPair.privateKey;
+    this.messageProvider.alert(true,"Testnet Account created",message);
   }
 
   /******************** open add qoc page *******************/

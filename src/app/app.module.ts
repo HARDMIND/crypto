@@ -12,6 +12,8 @@ import { DeleteProcessPage } from '../pages/delete-process/delete-process';
 import { EvaluatePage } from '../pages/evaluate/evaluate';
 import { TestServiceProvider } from '../providers/test-service/test-service';
 import { PagesProvider } from '../providers/pages/pages';
+import { MessagesProvider } from '../providers/messages/messages';
+import { WavesProvider } from '../providers/waves/waves';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { PagesProvider } from '../providers/pages/pages';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     // TestServiceProvider,
-    PagesProvider
+    PagesProvider,
+    MessagesProvider,
+    WavesProvider
   ]
 })
 export class AppModule {}

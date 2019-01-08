@@ -2,9 +2,10 @@ import { Component, ViewChild, NgZone } from '@angular/core';
 import { Platform, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-
 import { HomePage } from '../pages/home/home';
 import {PagesProvider} from "../providers/pages/pages";
+import { MessagesProvider } from '../providers/messages/messages';
+import { WavesProvider } from '../providers/waves/waves';
 
 @Component({
   templateUrl: 'app.html'
@@ -19,7 +20,9 @@ export class MyApp {
     statusBar: StatusBar,
     splashScreen: SplashScreen,
     zone : NgZone,
-    pageProvider : PagesProvider
+    pageProvider : PagesProvider,
+    wavesProvider: WavesProvider,
+    messageProvider : MessagesProvider
     ) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
