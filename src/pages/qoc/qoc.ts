@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
-import { JsonPipe } from '@angular/common';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { MessagesProvider } from '../../providers/messages/messages';
+import { WavesProvider } from '../../providers/waves/waves';
 declare var require: any;
-
 /**
  * Generated class for the QocPage page.
  *
@@ -24,30 +24,18 @@ export class QocPage {
   public inputOption:any;
   public inputCriteria:any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public alertCtrl: AlertController) {
-  }
-
-  /******************** View loaded *******************/
-  ionViewDidLoad() {}
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+    private messageProvider:MessagesProvider,
+    private wavesProvider:WavesProvider) {}
 
   /******************** Add QOC input to list *******************/
   addQOC(){
-    if(this.inputQuestion == "" || this.inputOption == "" || this.inputCriteria == ""){
-      /** return result */
-      const alert = this.alertCtrl.create({
-        title: 'Error',
-        subTitle: "Question, Option or Criteria is empty",
-        buttons: ['OK']
-      });
+    /* Call error if input is wrong  */
+    if(this.messageProvider.alert(this.inputQuestion == "" || this.inputOption == "" || this.inputCriteria == "",
+                                  "Error", "Question, Option or Criteria is empty")) return;
 
-      alert.present();
-      return;
-    }
-    const WavesAPI = require('@waves/waves-api');
-    const Waves = WavesAPI.create(WavesAPI.TESTNET_CONFIG);
-
-    // /** create process seed from phrase */
-    const senderPhrase =Waves.Seed.fromExistingPhrase(this.senderPhrase) ;
+    /** Error if phrase is null */
+    if(this.messageProvider.alert(this.processPhrase == "", "Error","Phrase cant be null"))return;
 
     let counter = (this.qocList.length >= 3) ? this.qocList.length / 3 : 0;
 
@@ -57,6 +45,10 @@ export class QocPage {
      *  question 001  => question001
      *  option 001  => option001
      */
+
+    var sha256 = require("sha256");
+    var senderSeedSha256 = sha256(this.wavesProvider.createAccountFromSeed(this.senderPhrase).keyPair.publicKey);
+
     let counterChange = counter.toString();
 
     if(counter.toString().length == 2){
@@ -68,18 +60,18 @@ export class QocPage {
     }
 
     /** get content from input  */
-    let qInput = {
-      "key":"question" + counterChange + senderPhrase.keyPair.publicKey,
+    var qInput = {
+      "key":"question&" +counterChange + "&" + senderSeedSha256,
       "type":"string",
       "value":this.inputQuestion
     }
-    let oInput = {
-      "key":"option" + counterChange + senderPhrase.keyPair.publicKey,
+    var oInput = {
+      "key":"option&" + counterChange   + "&"  + senderSeedSha256,
       "type":"string",
       "value":this.inputOption
     }
-    let cInput = {
-      "key":"criteria" + counterChange + senderPhrase.keyPair.publicKey,
+    var cInput = {
+      "key":"criteria&" + counterChange  + "&" + senderSeedSha256,
       "type":"string",
       "value":this.inputCriteria
     }
@@ -90,7 +82,7 @@ export class QocPage {
     this.qocList.push(cInput);
     var text = "";
 
-    /** show the user his input */
+    /** show users input */
     for (let i=0; i<this.qocList.length; i++) {
       text+= this.qocList[i].value + "\n";
     }
@@ -108,70 +100,21 @@ export class QocPage {
   async sendQOC(){
 
     /** validation  */
-    if(this.senderPhrase == null || this.senderPhrase.length < 15 || this.processPhrase == null || this.processPhrase.length < 15){
-      /** return result */
-      const alert = this.alertCtrl.create({
-        title: 'Error',
-        subTitle: "Need processPhrase / senderPhrase  or phrase is to short (min length 15)",
-        buttons: ['OK']
-      });
-
-      alert.present();
-      return;
-    }
+    if(this.messageProvider.alert(this.senderPhrase == null || this.senderPhrase.length < 15 || this.processPhrase == null || this.processPhrase.length < 15,
+          "Error","Need processPhrase / senderPhrase  or phrase is to short (min length 15)")) return;
 
     /** Check if qocList is not empty */
-    if(this.qocList.length == 0 ){
-      /** return result */
-      const alert = this.alertCtrl.create({
-        title: 'Error',
-        subTitle: "Need data",
-        buttons: ['OK']
-      });
+    if(this.messageProvider.alert(this.qocList.length == 0, "Error", "Need data"))return;
 
-      alert.present();
-      return;
+    /* send data */
+    if(this.wavesProvider.sendData(this.qocList,this.senderPhrase, this.processPhrase)){
+      /** return result */
+      this.messageProvider.alert(true,"Output","QOC Data eingefügt \n");
+    }else{
+      this.messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
     }
 
-    // /** import waves api */
-    const WavesAPI = require('@waves/waves-api');
-    const Waves = WavesAPI.create(WavesAPI.TESTNET_CONFIG);
 
-    // /** create process seed from phrase */
-    const seedProcess =Waves.Seed.fromExistingPhrase(this.processPhrase) ;
-   
-   
-    /** create sender seed from phrase */
-    const seedSender = Waves.Seed.fromExistingPhrase(this.senderPhrase) ;
-
-    /** create qoc data object */
-    let dataObj ={
-      data: this.qocList,
-      senderPublicKey: seedProcess.keyPair.publicKey,
-      sender: seedProcess.address,
-      fee:1000000
-    };
-
-    /** prepare QOC data transaction object*/
-    const dataTx = await Waves.tools.createTransaction("data", dataObj);
-    
-    /** add proof to QOC data transaction  */
-    dataTx.addProof(seedSender.keyPair.privateKey);
-
-    /** create json from  dataTx object */
-    const txJSON = await dataTx.getJSON();
-
-    /** send data  */
-    const transactionresult = await Waves.API.Node.transactions.rawBroadcast(txJSON);
-
-    /** return result */
-    const alert = this.alertCtrl.create({
-      title: 'Output',
-      subTitle: "QOC Data eingefügt \n" ,
-      buttons: ['Check']
-    });
-
-    alert.present();
   }
 
 }
