@@ -9,34 +9,53 @@
 
 <ion-content padding height="50%" width="50%">
 
+  <!--<ion-list>-->
+    <!--<ion-item>-->
+      <!--<button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">-->
+        <!--{{p.title}}-->
+      <!--</button>-->
+    <!--</ion-item>-->
+  <!--</ion-list>-->
+
+  <!--<ion-grid >-->
+    <!--<ion-row text-center align-items-center>-->
+      <!--<ion-col>-->
+          <!--<button color="danger" ion-button large (click)="openEvaluateQoc()">Prozess auswerten</button>-->
+      <!--</ion-col>-->
+    <!--</ion-row>-->
+    <!--<ion-row text-center align-items-center >-->
+        <!--<ion-col>-->
+          <!--<button ion-button large (click)="openCreateProcess()">Prozess erstellen</button>-->
+          <!--<button ion-button large (click)="openDeleteProcess()">Prozess löschen</button>-->
+        <!--</ion-col>-->
+    <!--</ion-row>-->
+    <!--<ion-row text-center align-items-center>-->
+      <!--<ion-col>-->
+        <!--<button ion-button large (click)="createAccount()">Account erstellen</button>-->
+        <!--<button ion-button large (click)="openAddQoc()">QOC Einfügen</button>-->
+      <!--</ion-col>-->
+    <!--</ion-row>-->
+  <!--</ion-grid>-->
+
+
   <ion-list>
-    <ion-item>
-      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-        {{p.title}}
-      </button>
-    </ion-item>
+    <ion-list-header>
+      Scripts
+    </ion-list-header>
+    <ion-item (click)="openCreateProcess()">Create Script</ion-item>
+    <ion-item (click)="openDeleteProcess()">Delete Script</ion-item>
+
+    <ion-list-header>
+      Business Process
+    </ion-list-header>
+    <ion-item (click)="openAddQoc()">Create QOC</ion-item>
+    <ion-item (click)="openEvaluateQoc()">Evaluate QOC</ion-item>
+
+    <ion-list-header>
+      Account
+    </ion-list-header>
+    <ion-item (click)="createAccount()">Create WAVES Account</ion-item>
   </ion-list>
-
-  <ion-grid >
-    <ion-row text-center align-items-center>
-      <ion-col>
-          <button color="danger" ion-button large (click)="openEvaluateQoc()">Prozess auswerten</button>
-      </ion-col>
-    </ion-row>
-    <ion-row text-center align-items-center >
-        <ion-col>
-          <button ion-button large (click)="openCreateProcess()">Prozess erstellen</button>
-          <button ion-button large (click)="openDeleteProcess()">Prozess löschen</button>
-        </ion-col>
-    </ion-row>
-    <ion-row text-center align-items-center>
-      <ion-col>
-        <button ion-button large (click)="createAccount()">Account erstellen</button>
-        <button ion-button large (click)="openAddQoc()">QOC Einfügen</button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
 
 
 </ion-content>
