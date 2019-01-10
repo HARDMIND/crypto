@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
 
@@ -17,15 +17,29 @@ import { WavesProvider } from '../../providers/waves/waves';
 })
 export class CreateProcessPage {
 
-  public pk:any;
   public phrase:any;
   public list = [];
   public orderForm:any;
   public textPk:any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
+  items = [
+    {
+      title: 'Key 1',
+    },
+    {
+      title: 'Key 2',
+    },
+    {
+      title: 'PK 3',
+    },
+  ];
+
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
     private messageProvider:MessagesProvider,
-    private wavesProvider:WavesProvider) {
+    private wavesProvider:WavesProvider,
+    private alertCtrl : AlertController) {
   }
 
   /******************** Add script to waves acc  *******************/
@@ -40,12 +54,42 @@ export class CreateProcessPage {
     this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
   }
 
-  /******************** add public key to list  *******************/
-  addPublicKey(){
-    /** Check if public key is not empty or is longer then 15 digits */
-    if(this.messageProvider.alert(this.pk == "" || this.pk.length < 15, 'Error', "No public key set"))return;
+  addPublicKeyAlert() {
+    const prompt = this.alertCtrl.create({
+      title: 'Add Participant',
+      message: "Please enter a valid publickey of a participant.",
+      inputs: [
+        {
+          name: 'publickey',
+          placeholder: 'Publickey'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Submit',
+          handler: data => {
+            console.log('Saved clicked');
+            console.log(data);
+            this.addPublicKey(data.publickey);
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
 
-    this.list.push(this.pk);
+  /******************** add public key to list  *******************/
+  addPublicKey(pk : string) {
+    /** Check if public key is not empty or is longer then 15 digits */
+    if(this.messageProvider.alert(pk == "" || pk.length < 15, 'Error', "No public key set"))return;
+
+    this.list.push(pk);
     var text = "";
 
     for (let i=0; i<this.list.length; i++) {
@@ -53,7 +97,11 @@ export class CreateProcessPage {
     }
 
     this.textPk = text;
-
-    this.pk = "";
+    this.items.push({ title: pk });
   }
+
+  deletePublicKey(i) {
+    this.items.splice(i,1);
+  }
+
 }

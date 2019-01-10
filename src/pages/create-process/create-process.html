@@ -3,44 +3,35 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Create Script</ion-title>
+    <ion-title>Create Project</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <ion-grid>
-    <ion-col >
-      <ion-row >
-        <h4 ion-text color="danger">{{textPk}}</h4>
-      </ion-row>
 
-      <ion-row >
-          <ion-item text-center align-items-center>
-              <ion-label color="primary" floating>Phrase</ion-label>
-              <ion-input text-center align-items-center type="text" [(ngModel)]="phrase"></ion-input >
-          </ion-item>
-      </ion-row>
+  <ion-list>
 
-      <ion-row >
-        <ion-item text-center align-items-center>
-          <ion-label color="primary" floating>Public Key</ion-label>
-          <ion-input text-center align-items-center type="text" [(ngModel)]="pk"></ion-input>
-        </ion-item>
-      </ion-row>
-      <ion-row >
-        <ion-item text-center align-items-center>
-            <button  ion-button (click)="addPublicKey()">Füge PublicKey hinzu</button>
-        </ion-item>
-      </ion-row>
-      <ion-row >
-          <ion-item text-center align-items-center>
-              <button ion-button (click)="addScriptToAcc()">Erstelle Prozess</button>
-          </ion-item>
-        </ion-row>
-    </ion-col>
-  </ion-grid>
+<ion-list-header>Personal Phrase</ion-list-header>
+    <ion-item text-center align-items-center>
+      <ion-label color="primary" floating>Phrase</ion-label>
+      <ion-input text-center align-items-center type="text" [(ngModel)]="phrase"></ion-input >
+    </ion-item>
 
+    <ion-list-header>
+      Public Keys
+      <button item-end ion-button icon-only clear (click)="addPublicKeyAlert()">
+        <ion-icon color="primary" name="add-circle"></ion-icon>
+      </button>
+    </ion-list-header>
 
+      <ion-item #item *ngFor="let thing of items; let i = index; ">
+        <ion-icon item-start color="danger" name="remove-circle" (click)="deletePublicKey(i)"></ion-icon> {{thing.title}}
+      </ion-item>
+
+    <ion-item text-center align-items-center>
+      <button ion-button full (click)="addScriptToAcc()">Create Project</button>
+    </ion-item>
+  </ion-list>
 
 
 </ion-content>
