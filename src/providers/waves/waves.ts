@@ -27,6 +27,7 @@ export class WavesProvider {
 
   /** get all data from adress */
   public async getData(address){
+    this.calculatedData = [];
     this.dataList = [];
     this.getDataList = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+address);
     this.getDataList.subscribe(data => {
