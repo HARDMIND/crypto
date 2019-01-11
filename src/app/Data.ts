@@ -1,17 +1,19 @@
 export class Data {
-    public question:any;
-    public option: any;
+    public option: any ;
     public criteria:any;
-    public pk:any;
+    public criteriaWeight:any ;
+    public optionWeight:any ;
+    public weightCalculated : number ;
 
-    constructor(question : any, option:any, criteria:any, pk:any){
-        this.question = question;
+    constructor(option : any, criteria:any = "", optionWeight:any = 0,criteriaWeight:any = 0){
         this.option = option;
         this.criteria = criteria;
-        this.pk = pk;
+        this.optionWeight = optionWeight ;
+        this.criteriaWeight = criteriaWeight;
+        this.weightCalculated = this.criteriaWeight * this.optionWeight ;
     }
 
     public toString(){
-        return this.question + " " + this.option + " " + this.criteria + " "+ this.pk;
+        return this.option + " " + this.criteria + " "+this.optionWeight +" "+ this.criteriaWeight + " " + this.weightCalculated;
     }
 }

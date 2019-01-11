@@ -1,7 +1,8 @@
 
 import { Injectable } from '@angular/core';
-import * as request from "request";
 import { Data } from '../../app/Data';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs/Observable';
 declare var require: any;
 
 /*
@@ -14,47 +15,66 @@ declare var require: any;
 export class WavesProvider {
   wavesApi :any;
   waves: any;
-  constructor() {
+  dataList : Data[] = [];
+  calculatedData:Data[] = [];
+  getDataList :Observable<any>;
+
+  constructor(public httpClient: HttpClient) {
     console.log('Hello WavesProvider Provider');
     this.wavesApi =  require('@waves/waves-api');
     this.waves = this.wavesApi.create(this.wavesApi.TESTNET_CONFIG);
   }
 
   /** get all data from adress */
-  public async getData(adress){
-    await request('https://pool.testnet.wavesnodes.com/addresses/data/'+adress,
-      function (error, response, body){
-        /** parse data */
-        var dataList : Data[] = [];
-        var parsedBody = JSON.parse(body);
+  public async getData(address){
+    this.dataList = [];
+    this.getDataList = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+address);
+    this.getDataList.subscribe(data => {
+
+      var foundfinalData = data.find( dataChild => dataChild.key == "_finalOption");
+      /** if final data not in address data , then evaluate given data  */
+      if(foundfinalData != null){
+        /** Parse final Data   */
+        var splitChild = foundfinalData.value.split("&");
+        var finalData = new Data(splitChild[0]);
+        finalData.weightCalculated = splitChild[1];
+        this.calculatedData.push(finalData);
+      }else{
         /** Get all questions  */
-        for(var i=0;i<parsedBody.length;i++){
-          var child = parsedBody[i];
-          var splitChild = child.key.split("&");
-          
-          if(splitChild[0] == "question"){
-            var searchForOption = "option&" + splitChild[1]+ "&" + splitChild[2];
-            var searchForCriteria = "criteria&" + splitChild[1]+ "&" + splitChild[2];
-            var foundOption = parsedBody.find(e => e.key === searchForOption);
-            var foundCriteria = parsedBody.find(e => e.key === searchForCriteria);
-            dataList.push(new Data(child.value,foundOption.value,foundCriteria.value, splitChild[2] ));
+        for(var i=0;i<data.length;i++){
+          var child = data[i];
+          var splitChild = child.value.split("&");
+          /** 1.option , 2.criteria,3.option weight, 4.criteria weight */
+          var option    = splitChild[0];
+          var criteria  = splitChild[1];
+          var optionWeight = splitChild[2];
+          var criteriaWeight = splitChild[3];
+          var newData = new Data(option,criteria,optionWeight,criteriaWeight);
+          this.dataList.push(newData);
+
+          var foundData = this.calculatedData.find( data => data.option == newData.option);
+        
+          if(foundData == undefined){
+            console.log("Added "+ newData);
+            this.calculatedData.push(newData);
+          }else{
+            console.log("Added calculate "+ foundData);
+            foundData.weightCalculated += newData.weightCalculated;
           }
         }
-        
-        dataList.forEach(element => {
-          console.log(element.toString());
-        });
       }
-    );
+
+
+    });
   }
 
   /** Send data to nodes  */
   public async sendData(data,phraseSender,phraseProcess){
       // /** create process seed from phrase */
-      const seedProcess =this.createAccountFromSeed(phraseProcess) ;
+      const seedProcess =this.createSeedFromPhrase(phraseProcess) ;
   
       /** create sender seed from phrase */
-      const seedSender = this.createAccountFromSeed(phraseSender) ;
+      const seedSender = this.createSeedFromPhrase(phraseSender) ;
 
       /** create qoc data object */
       let dataObj ={
@@ -78,12 +98,12 @@ export class WavesProvider {
   }
 
   /** Create account from phrase */
-  public createAccountFromSeed(phrase){
+  public createSeedFromPhrase(phrase){
     return this.waves.Seed.fromExistingPhrase(phrase) ;
   }
   
   /** create new account */
-  public createAccount(){
+  public createSeed(){
     return this.waves.Seed.create();
   }
 
@@ -91,7 +111,7 @@ export class WavesProvider {
   public async createScript(list,phrase){
     // json to string sample: JSON.stringify(txJSON)
     /** create seed from phrase */
-    const seed = this.createAccountFromSeed(phrase) ;
+    const seed = this.createSeedFromPhrase(phrase) ;
     
     /** prepare Script */
     let scriptBodyNew = 
@@ -135,27 +155,28 @@ export class WavesProvider {
     return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
   }
 
-  public async sendWaves(seed, amount,recipient){
-    /* Create script obj */
-    let transferTxObj  ={
-      senderPublicKey: seed.keyPair.publicKey,
-      sender:seed.address,
-      recipient:recipient,
-      amount:amount,
-      assetId:"SDASDasdasdad"
-    };
-
-    /** prepare data transaction  object*/
-    const dataTx = await this.waves.tools.createTransaction("transfer", transferTxObj);
-
-    /** add proof to transaction  */
-    dataTx.addProof(seed.keyPair.privateKey);
-
-    /** create json from  dataTx object */
-    const txJSON = await dataTx.getJSON();
-
+  public async sendWaves(seed, amount,rec){
+    const { transfer } = require('waves-transactions')
+    
+    const acc = this.createSeed();
+    const signedTranserTx = transfer({ 
+      amount: 1,
+      recipient: '3N9ynFuntBJWfG4SbEXqTrbUEnsUAG2VSJm',
+       //Timestamp is optional but it was overrided, in case timestamp is not provided it will fallback to Date.now()
+    
+      //Every function from the list above has a set of required and optional params 
+      //fee: 100000 //Fee is always optional, in case fee is not provided, it will be calculated for you
+      //feeAssetId: undefined
+    }, acc);
+  
+    console.log(signedTranserTx);
     /** send transaction with script  */
-    return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
+    return await this.waves.API.Node.transactions.rawBroadcast(signedTranserTx);
+
+    //const signedTransferTx = transfer(params, seed)
+
     
   }
+
+
 }

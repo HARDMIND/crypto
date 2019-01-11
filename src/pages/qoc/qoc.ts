@@ -16,13 +16,12 @@ declare var require: any;
   templateUrl: 'qoc.html',
 })
 export class QocPage {
-  public senderPhrase:any;
-  public processPhrase:any;
   public qocList = [];
   public textQOC:any;
-  public inputQuestion:any;
   public inputOption:any;
+  public inputOptionWeight:any;
   public inputCriteria:any;
+  public inputCriteriaWeight:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private messageProvider:MessagesProvider,
@@ -31,24 +30,17 @@ export class QocPage {
   /******************** Add QOC input to list *******************/
   addQOC(){
     /* Call error if input is wrong  */
-    if(this.messageProvider.alert(this.inputQuestion == "" || this.inputOption == "" || this.inputCriteria == "",
+    if(this.messageProvider.alert( this.inputOption == "" || this.inputCriteria == "" || this.inputCriteriaWeight == "" || this.inputCriteriaWeight == "",
                                   "Error", "Question, Option or Criteria is empty")) return;
 
     /** Error if phrase is null */
-    if(this.messageProvider.alert(this.processPhrase == "", "Error","Phrase cant be null"))return;
+    if(this.messageProvider.alert(localStorage['projectPhrase'] == "", "Error","Phrase cant be null"))return;
 
-    let counter = (this.qocList.length >= 3) ? this.qocList.length / 3 : 0;
+    let counter = (this.qocList.length > 0) ? this.qocList.length  : 0;
 
-    /** QOC format : question + QuestionCounter 
-     *  QuestionCounter = 3 digits after question/option/criteria
-     *  example : 
-     *  question 001  => question001
-     *  option 001  => option001
-     */
+    var senderPK = this.wavesProvider.createSeedFromPhrase(localStorage['userPhrase']).keyPair.publicKey;
 
-    var sha256 = require("sha256");
-    var senderSeedSha256 = sha256(this.wavesProvider.createAccountFromSeed(this.senderPhrase).keyPair.publicKey);
-
+    /** prepare counter  */
     let counterChange = counter.toString();
 
     if(counter.toString().length == 2){
@@ -60,26 +52,15 @@ export class QocPage {
     }
 
     /** get content from input  */
-    var qInput = {
-      "key":"question&" +counterChange + "&" + senderSeedSha256,
-      "type":"string",
-      "value":this.inputQuestion
-    }
+    var value = this.inputOption + "&" + this.inputCriteria + "&"+this.inputOptionWeight + "&"+this.inputCriteriaWeight;
     var oInput = {
-      "key":"option&" + counterChange   + "&"  + senderSeedSha256,
+      "key": counterChange   + "&"  + senderPK,
       "type":"string",
-      "value":this.inputOption
-    }
-    var cInput = {
-      "key":"criteria&" + counterChange  + "&" + senderSeedSha256,
-      "type":"string",
-      "value":this.inputCriteria
+      "value":value
     }
 
     /** push QOC to list */
-    this.qocList.push(qInput);
     this.qocList.push(oInput);
-    this.qocList.push(cInput);
     var text = "";
 
     /** show users input */
@@ -91,23 +72,24 @@ export class QocPage {
     this.textQOC = text;
 
     /** reset input */
-    this.inputQuestion = "";
     this.inputOption = "";
     this.inputCriteria = "";
+    this.inputCriteriaWeight = "";
+    this.inputOptionWeight = "";
   }
 
   /******************** Send QOC Data  *******************/
   async sendQOC(){
 
     /** validation  */
-    if(this.messageProvider.alert(this.senderPhrase == null || this.senderPhrase.length < 15 || this.processPhrase == null || this.processPhrase.length < 15,
+    if(this.messageProvider.alert(localStorage['projectPhrase'] == null ||localStorage['projectPhrase'].length < 15 || localStorage['userPhrase'] == null || localStorage['userPhrase'].length < 15,
           "Error","Need processPhrase / senderPhrase  or phrase is to short (min length 15)")) return;
 
     /** Check if qocList is not empty */
     if(this.messageProvider.alert(this.qocList.length == 0, "Error", "Need data"))return;
 
     /* send data */
-    if(this.wavesProvider.sendData(this.qocList,this.senderPhrase, this.processPhrase)){
+    if(this.wavesProvider.sendData(this.qocList,localStorage['userPhrase'],localStorage['projectPhrase'])){
       /** return result */
       this.messageProvider.alert(true,"Output","QOC Data eingefügt \n");
     }else{

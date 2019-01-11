@@ -15,6 +15,8 @@ import { PagesProvider } from '../providers/pages/pages';
 import { MessagesProvider } from '../providers/messages/messages';
 import { WavesProvider } from '../providers/waves/waves';
 import { LoginPage } from '../pages/login/login';
+import { HttpClientModule } from '@angular/common/http';
+import { EvaluationProvider } from '../providers/evaluation/evaluation';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,7 @@ import { LoginPage } from '../pages/login/login';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -47,7 +50,8 @@ import { LoginPage } from '../pages/login/login';
     // TestServiceProvider,
     PagesProvider,
     MessagesProvider,
-    WavesProvider
+    WavesProvider,
+    EvaluationProvider
   ]
 })
 export class AppModule {}

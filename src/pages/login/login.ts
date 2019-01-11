@@ -41,7 +41,7 @@ export class LoginPage {
   }
 
   createAccount(){
-    const seed = this.wavesProvider.createAccount();
+    const seed = this.wavesProvider.createSeed();
     localStorage['projectPhrase'] = seed.phrase;
     this.userPhrase = seed.phrase;
     var message = '<p>Phrase: ' + seed.phrase + "</p>"+

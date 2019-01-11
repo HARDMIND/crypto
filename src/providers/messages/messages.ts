@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AlertController } from 'ionic-angular';
+import { EvaluationProvider } from '../evaluation/evaluation';
 
 /*
   Generated class for the MessagesProvider provider.
@@ -10,7 +11,7 @@ import { AlertController } from 'ionic-angular';
 @Injectable()
 export class MessagesProvider {
 
-  constructor(public alertCtrl: AlertController) {
+  constructor(public alertCtrl: AlertController, public evaluationProvider:EvaluationProvider) {
     console.log('Hello MessagesProvider Provider');
   }
 
@@ -29,4 +30,5 @@ export class MessagesProvider {
 
     return false;
   }
+
 }

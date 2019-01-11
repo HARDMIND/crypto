@@ -45,15 +45,11 @@ export class CreateProcessPage {
   /******************** Add script to waves acc  *******************/
   async addScriptToAcc(){
     if(this.messageProvider.alert(this.list == [] || this.list.length == 0,"Error","No public key"))return;
-
+    
     /** generate new acc */
-    var seedBank = this.wavesProvider.createAccountFromSeed("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
-    var seedProject = this.wavesProvider.createAccount();
+    var seedBank = this.wavesProvider.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
+    var seedProject = this.wavesProvider.createSeed();
     var response = this.wavesProvider.sendWaves(seedBank,100000, seedProject.address);
-
-    console.log(response);
-
-    console.log("address " + seedProject.address);
 
     if(response){
       console.log("is true")

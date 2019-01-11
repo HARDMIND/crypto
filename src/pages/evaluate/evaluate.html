@@ -11,14 +11,38 @@
     <ion-grid>
         <ion-col >
             <ion-row >
-                <ion-item>
-                    <ion-label color="primary" floating>Address</ion-label>
-                    <ion-input  align-items-center type="text" [(ngModel)]="processAddress"></ion-input>
-                </ion-item>
-            </ion-row>
-            <ion-row >
-                <button ion-button (click)="evaluateData()">Auswerten</button>
+                <button ion-button (click)="evaluateData()">Evaluate</button>
             </ion-row>
         </ion-col>
     </ion-grid>
+    <br>
+    <br>
+    <ion-grid *ngIf="evaluationProvider.dataList.length > 0">
+        <ion-row>
+            <ion-col>
+                #
+            </ion-col>
+            <ion-col>
+                   Option
+            </ion-col>
+            <ion-col>
+                   Calculated weight
+            </ion-col>
+        </ion-row>
+        <ion-row *ngFor="let data of evaluationProvider.dataList;let i = index ">
+            <ion-col>
+                <ion-checkbox [(ngModel)]="evaluationProvider.checkBoxes[i]" (ionChange)="checked()"></ion-checkbox>
+            </ion-col>
+            <ion-col>
+                {{data.option}}
+            </ion-col>
+            <ion-col>
+                {{data.weightCalculated}}
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <button  *ngIf="evaluationProvider.dataList.length > 0" disabled ion-button round [disabled]="isDisabled" (click)="evaluationProvider.mergeEntries()">Merge</button>
+    <button  *ngIf="evaluationProvider.dataList.length > 0" ion-button round (click)="finalEvaluation()">Evaluate</button>
 </ion-content>
+
+

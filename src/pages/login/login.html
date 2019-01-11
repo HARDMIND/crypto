@@ -1,5 +1,8 @@
 <body>
   <div class="ion-grid">
+    <h1>WELCOME YOU ARE </h1>
+    <h4>Your journey here begins</h4>
+    <br>
     <ion-item>
       <ion-label color="primary" floating>Your Phrase</ion-label>
       <ion-input [(ngModel)]="userPhrase"></ion-input>
@@ -8,8 +11,10 @@
       <ion-label color="primary" floating>Project Phrase</ion-label>
       <ion-input [(ngModel)]="projectPhrase"></ion-input>
     </ion-item>
+    <br>
     <p> <a href="#" (click)="createAccount()">Dont have a account?</a></p>
     <p> <a href="#" (click)="createProject()">Want to create a project?</a></p>
+    <br>
     <button ion-button round (click)="login()">Login</button>
   </div>
 </body>

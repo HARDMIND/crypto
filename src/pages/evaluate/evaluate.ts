@@ -1,31 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, List } from 'ionic-angular';
-import { MyApp } from '../../app/app.component';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { Data } from '../../app/Data';
-import { e } from '@angular/core/src/render3';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
-
-/**
- * Generated class for the EvaluatePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
- /**
-  * API Call: check if address is valid:
-  * https://pool.testnet.wavesnodes.com/addresses/validate/3N84XFvEF1SdV2HhmHY2PzFfFDSpcRHrUwj
-  * 
-  * API Call: get balance(waves) by address
-  * https://pool.testnet.wavesnodes.com/addresses/balance/details/3MqmYoj33w6rSfKh4QNeMxLYKCCz988kuWt
-  * 
-  * API Call get last 100 transactions from address:
-  * https://pool.testnet.wavesnodes.com/transactions/address/3MqmYoj33w6rSfKh4QNeMxLYKCCz988kuWt/limit/100
-  * 
-  * API Call get data from address:
-  * https://pool.testnet.wavesnodes.com/addresses/data/3MqmYoj33w6rSfKh4QNeMxLYKCCz988kuWt
-  */
+import { EvaluationProvider } from '../../providers/evaluation/evaluation';
 
 @IonicPage()
 @Component({
@@ -33,22 +11,53 @@ import { WavesProvider } from '../../providers/waves/waves';
   templateUrl: 'evaluate.html',
 })
 export class EvaluatePage {
-  public processAddress:any;
+  
+  public isDisabled = true;
+  mergedData:Data[] = [];
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
               private messageProvider:MessagesProvider,
-              private wavesProvider:WavesProvider) {}
+              private wavesProvider:WavesProvider,
+              public evaluationProvider: EvaluationProvider) {}
+
+  ionViewDidLoad(){
+    this.evaluationProvider.dataList = this.wavesProvider.dataList;
+  }
 
   /******************** Evaluate data  *******************/
-  async evaluateData(){
-    this.processAddress = "3MsVG9YaqKCFuAGBsMRw6swtEn6ebQX7rYL";
-    //this.processAddress = "3N6wVxpYNiLJFJWkX4wFKfrGiAhvBtVxdBM";
-    if(this.messageProvider.alert(this.processAddress == "" || this.processAddress == null ||this.processAddress.length < 10, 
-                                  "Need address",""))return;
 
-    await this.wavesProvider.getData(this.processAddress);
+  /** evaluate QOC data from all users  */
+  async evaluateData(){
+    if(this.messageProvider.alert(localStorage['projectPhrase'] == "" || localStorage['projectPhrase']  == null ||localStorage['projectPhrase'].length < 10, 
+    "Need address",""))return;
+    const seed = this.wavesProvider.createSeedFromPhrase(localStorage['projectPhrase']);
+
+    await this.wavesProvider.getData(seed.address).then(() => this.evaluationProvider.dataList = this.wavesProvider.calculatedData);
+    this.evaluationProvider.initCheckBox();
   } 
 
+  /** check if 2 or more checkboxes are checked */
+  checked(){
+    var counter = 0;
+    this.evaluationProvider.checkBoxes.forEach(element => {
+      if(element){
+        counter += 1;
+      }
+    });
+
+    if(counter >1){
+      this.isDisabled = false;
+    }else{
+      this.isDisabled = true;
+    }
+
+  }
+
+  /** call final evaluation and reinit entries */
+  finalEvaluation(){
+    var data = this.evaluationProvider.finalEvaluation();
+    this.messageProvider.alert(true,"Rsult","Option: " + data.option + " value: " + data.weightCalculated);
+  }
 
 }

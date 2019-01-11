@@ -15,38 +15,37 @@
                     <h4 ion-text color="danger">{{textQOC}}</h4>
             </ion-row>
             <ion-row >
-                <ion-item>
-                    <ion-label color="primary" floating>Your Phrase</ion-label>
-                    <ion-input  align-items-center type="text" [(ngModel)]="senderPhrase"></ion-input>
-                </ion-item>
+                <ion-col>
+                    <ion-item>
+                        <ion-label color="primary" floating>Add Option </ion-label>
+                        <ion-input  align-items-center type="text" [(ngModel)]="inputOption"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                        <ion-label color="primary" floating>Add Option weight</ion-label>
+                        <ion-input  align-items-center type="number" [(ngModel)]="inputOptionWeight"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            
+            <ion-row >
+                <ion-col>
+                    <ion-item>
+                            <ion-label color="primary" floating>Add Criteria</ion-label>
+                            <ion-input  align-items-center type="text" [(ngModel)]="inputCriteria"></ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col>
+                    <ion-item>
+                            <ion-label color="primary" floating>Add Criteria weight</ion-label>
+                            <ion-input  align-items-center type="number" [(ngModel)]="inputCriteriaWeight"></ion-input>
+                    </ion-item>
+                </ion-col>
             </ion-row>
             <ion-row >
-                <ion-item>
-                    <ion-label color="primary" floating>Process Phrase</ion-label>
-                    <ion-input  align-items-center type="text" [(ngModel)]="processPhrase"></ion-input>
-                </ion-item>
-            </ion-row>
-            <ion-row >
-                <ion-item>
-                    <ion-label color="primary" floating>Question einfügen</ion-label>
-                    <ion-input  align-items-center type="text" [(ngModel)]="inputQuestion"></ion-input>
-                </ion-item>
-            </ion-row>
-            <ion-row >
-                <ion-item>
-                    <ion-label color="primary" floating>Option einfügen</ion-label>
-                    <ion-input  align-items-center type="text" [(ngModel)]="inputOption"></ion-input>
-                </ion-item>
-            </ion-row>
-            <ion-row >
-                <ion-item>
-                    <ion-label color="primary" floating>Criteria einfügen</ion-label>
-                    <ion-input  align-items-center type="number" [(ngModel)]="inputCriteria"></ion-input>
-                </ion-item>
-            </ion-row>
-            <ion-row >
-                <button ion-button (click)="addQOC()">QOC in Liste einfügen</button>
-                <button ion-button (click)="sendQOC()">Senden</button>
+                <button ion-button (click)="addQOC()">Add QOC to list</button>
+                <button ion-button (click)="sendQOC()">Send</button>
             </ion-row>
         </ion-col>
     </ion-grid>

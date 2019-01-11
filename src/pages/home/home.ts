@@ -6,6 +6,7 @@ import { DeleteProcessPage } from '../delete-process/delete-process';
 import { EvaluatePage } from '../evaluate/evaluate';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
+import { LoginPage} from '../login/login';
 
 @Component({
   selector: 'page-home',
@@ -19,7 +20,7 @@ export class HomePage {
   
   /******************** create new waves acc  *******************/
   createAccount(){
-    const seed = this.wavesProvider.createAccount();
+    const seed = this.wavesProvider.createSeed();
 
     /** generate account and show phrase */
     var message = '<p>Phrase: ' + seed.phrase + "</p>"+
@@ -47,6 +48,12 @@ export class HomePage {
   /******************** open evaluate page  *******************/
   openEvaluateQoc(){
     this.navCtrl.push(EvaluatePage);
+  }
+
+  logout(){
+    localStorage['userPhrase']="";
+    localStorage['projectPhras']="";
+    this.navCtrl.push(LoginPage);
   }
   
 }
