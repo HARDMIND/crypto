@@ -14,6 +14,7 @@ import { TestServiceProvider } from '../providers/test-service/test-service';
 import { PagesProvider } from '../providers/pages/pages';
 import { MessagesProvider } from '../providers/messages/messages';
 import { WavesProvider } from '../providers/waves/waves';
+import { LoginPage } from '../pages/login/login';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { WavesProvider } from '../providers/waves/waves';
     QocPage,
     CreateProcessPage,
     DeleteProcessPage,
-    EvaluatePage
+    EvaluatePage,
+    LoginPage
   ],
   imports: [
     BrowserModule,
@@ -35,7 +37,8 @@ import { WavesProvider } from '../providers/waves/waves';
     QocPage,
     CreateProcessPage,
     DeleteProcessPage,
-    EvaluatePage
+    EvaluatePage,
+    LoginPage
   ],
   providers: [
     StatusBar,

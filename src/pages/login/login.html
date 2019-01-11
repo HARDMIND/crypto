@@ -1,0 +1,17 @@
+<body>
+  <div class="ion-grid">
+    <ion-item>
+      <ion-label color="primary" floating>Your Phrase</ion-label>
+      <ion-input [(ngModel)]="userPhrase"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label color="primary" floating>Project Phrase</ion-label>
+      <ion-input [(ngModel)]="projectPhrase"></ion-input>
+    </ion-item>
+    <p> <a href="#" (click)="createAccount()">Dont have a account?</a></p>
+    <p> <a href="#" (click)="createProject()">Want to create a project?</a></p>
+    <button ion-button round (click)="login()">Login</button>
+  </div>
+</body>
+
+

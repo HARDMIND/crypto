@@ -45,13 +45,25 @@ export class CreateProcessPage {
   /******************** Add script to waves acc  *******************/
   async addScriptToAcc(){
     if(this.messageProvider.alert(this.list == [] || this.list.length == 0,"Error","No public key"))return;
-    if(this.messageProvider.alert(this.phrase == null || this.phrase.length < 15,"Error","Need phrase or phrase to short (min length 15)"))return;
 
-    /** create script  */
-    this.wavesProvider.createScript(this.list, this.phrase);
+    /** generate new acc */
+    var seedBank = this.wavesProvider.createAccountFromSeed("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
+    var seedProject = this.wavesProvider.createAccount();
+    var response = this.wavesProvider.sendWaves(seedBank,100000, seedProject.address);
 
-    /** result message  */
-    this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
+    console.log(response);
+
+    console.log("address " + seedProject.address);
+
+    if(response){
+      console.log("is true")
+      /** create script  */
+     // this.wavesProvider.createScript(this.list, seedProject.phrase);
+
+      /** result message  */
+      this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
+    }
+
   }
 
   addPublicKeyAlert() {

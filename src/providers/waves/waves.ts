@@ -134,4 +134,28 @@ export class WavesProvider {
     /** send transaction with script  */
     return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
   }
+
+  public async sendWaves(seed, amount,recipient){
+    /* Create script obj */
+    let transferTxObj  ={
+      senderPublicKey: seed.keyPair.publicKey,
+      sender:seed.address,
+      recipient:recipient,
+      amount:amount,
+      assetId:"SDASDasdasdad"
+    };
+
+    /** prepare data transaction  object*/
+    const dataTx = await this.waves.tools.createTransaction("transfer", transferTxObj);
+
+    /** add proof to transaction  */
+    dataTx.addProof(seed.keyPair.privateKey);
+
+    /** create json from  dataTx object */
+    const txJSON = await dataTx.getJSON();
+
+    /** send transaction with script  */
+    return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
+    
+  }
 }
