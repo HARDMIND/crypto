@@ -17,22 +17,13 @@ import { WavesProvider } from '../../providers/waves/waves';
 })
 export class CreateProcessPage {
 
-  public phrase:any;
+  public projectPhrase:any;
+  public projectQuestion:any;
   public list = [];
   public orderForm:any;
   public textPk:any;
 
-  items = [
-    {
-      title: 'Key 1',
-    },
-    {
-      title: 'Key 2',
-    },
-    {
-      title: 'PK 3',
-    },
-  ];
+  items = [];
 
   constructor(
     public navCtrl: NavController,
@@ -45,16 +36,26 @@ export class CreateProcessPage {
   /******************** Add script to waves acc  *******************/
   async addScriptToAcc(){
     if(this.messageProvider.alert(this.list == [] || this.list.length == 0,"Error","No public key"))return;
-    
+    if(this.messageProvider.alert(this.projectQuestion == "" || this.projectPhrase == "","Error","Project phrase or project question"))return;
+
     /** generate new acc */
-    var seedBank = this.wavesProvider.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
-    var seedProject = this.wavesProvider.createSeed();
+    //var seedBank = this.wavesProvider.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
+    //var seedProject = this.wavesProvider.createSeed();
     //var response = this.wavesProvider.sendWaves(seedBank,100000, seedProject.address);
 
    // if(response){
       console.log("is true")
+      var questionJson = {
+        "key":"question",
+        "type":"string",
+        "value":this.projectQuestion
+      }
+      
+      /** send question to blockchain */
+      await this.wavesProvider.sendData([questionJson],this.projectPhrase,this.projectPhrase);
+
       /** create script  */
-     // this.wavesProvider.createScript(this.list, seedProject.phrase);
+      this.wavesProvider.createScript(this.list, this.projectPhrase);
 
       /** result message  */
       this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');

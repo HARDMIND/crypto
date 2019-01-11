@@ -110,6 +110,7 @@ export class WavesProvider {
 
   /** create script */
   public async createScript(list,phrase){
+
     // json to string sample: JSON.stringify(txJSON)
     /** create seed from phrase */
     const seed = this.createSeedFromPhrase(phrase) ;
