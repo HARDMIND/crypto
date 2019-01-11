@@ -55,4 +55,8 @@ export class LoginPage {
   createProject(){
     this.navCtrl.push(CreateProcessPage);
   }
+
+  testSend(){
+    this.wavesProvider.sendWaves();
+  }
 }

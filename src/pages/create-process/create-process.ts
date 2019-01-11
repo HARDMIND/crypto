@@ -49,16 +49,16 @@ export class CreateProcessPage {
     /** generate new acc */
     var seedBank = this.wavesProvider.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
     var seedProject = this.wavesProvider.createSeed();
-    var response = this.wavesProvider.sendWaves(seedBank,100000, seedProject.address);
+    //var response = this.wavesProvider.sendWaves(seedBank,100000, seedProject.address);
 
-    if(response){
+   // if(response){
       console.log("is true")
       /** create script  */
      // this.wavesProvider.createScript(this.list, seedProject.phrase);
 
       /** result message  */
       this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
-    }
+  //  }
 
   }
 

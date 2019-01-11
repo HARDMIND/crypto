@@ -156,26 +156,25 @@ export class WavesProvider {
     return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
   }
 
-  public async sendWaves(seed, amount,rec){
-    const { transfer } = require('waves-transactions')
-    
-    const acc = this.createSeed();
-    const signedTranserTx = transfer({ 
-      amount: 1,
-      recipient: '3N9ynFuntBJWfG4SbEXqTrbUEnsUAG2VSJm',
-       //Timestamp is optional but it was overrided, in case timestamp is not provided it will fallback to Date.now()
-    
-      //Every function from the list above has a set of required and optional params 
-      //fee: 100000 //Fee is always optional, in case fee is not provided, it will be calculated for you
-      //feeAssetId: undefined
-    }, acc);
-  
-    console.log(signedTranserTx);
-    /** send transaction with script  */
-    return await this.waves.API.Node.transactions.rawBroadcast(signedTranserTx);
+  public async sendWaves(){
+    const { transfer, signTx } = require('waves-transactions')
+    var seedFrom = this.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
+    const seedTo = this.createSeed();
 
-    //const signedTransferTx = transfer(params, seed)
-
+    var tr = transfer({ 
+      amount: 5,
+      recipient: seedTo.address,
+      senderPublicKey:seedFrom.keyPair.publicKey,
+      sender: seedFrom.address,
+      //attachment?: 'string',
+    // feeAssetId: 'WAVES',
+      //assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS', //WBTC
+      //fee?: 100000,
+      //timestamp?: Date.now(),
+    })
+    var st = signTx(tr,seedFrom.keyPair.privateKey);
+    console.log(st)
+    await this.waves.API.Node.transactions.rawBroadcast(st);
     
   }
 
