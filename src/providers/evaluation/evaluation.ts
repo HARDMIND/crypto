@@ -15,7 +15,6 @@ export class EvaluationProvider {
   public checkBoxes: boolean[] = [];
 
   constructor(  private alertCtrl:AlertController, private wavesProvider:WavesProvider) {
-    console.log('Hello EvaluationProvider Provider');
   }
 
   /** reinit all checkboxes  */

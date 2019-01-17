@@ -8,17 +8,15 @@
 </ion-header>
 
 <ion-content padding>
-
   <ion-list class="ion-list">
-      <ion-item>
-        <ion-label color="primary" floating>Project Phrase</ion-label>
-        <ion-input [(ngModel)]="projectPhrase"></ion-input>
-      </ion-item>
-      <ion-item>
-          <ion-label color="primary" floating>Project Question</ion-label>
-          <ion-input [(ngModel)]="projectQuestion"></ion-input>
-        </ion-item>
-
+    <ion-item>
+      <ion-label color="primary" floating>Project Phrase</ion-label>
+      <ion-input [(ngModel)]="projectPhrase"></ion-input>
+    </ion-item>
+    <ion-item>
+        <ion-label color="primary" floating>Project Question</ion-label>
+        <ion-input [(ngModel)]="projectQuestion"></ion-input>
+    </ion-item>
     <ion-list-header>
       Public Keys
       <button item-end ion-button icon-only clear (click)="addPublicKeyAlert()">
@@ -26,14 +24,12 @@
       </button>
     </ion-list-header>
 
-      <ion-item #item *ngFor="let thing of items; let i = index; ">
-        <ion-icon item-start color="danger" name="remove-circle" (click)="deletePublicKey(i)"></ion-icon> {{thing.title}}
-      </ion-item>
+    <ion-item #item *ngFor="let thing of items; let i = index; ">
+      <ion-icon item-start color="danger" name="remove-circle" (click)="deletePublicKey(i)"></ion-icon> {{thing.title}}
+    </ion-item>
 
     <ion-item text-center align-items-center>
       <button ion-button full (click)="addScriptToAcc()">Create Project</button>
     </ion-item>
   </ion-list>
-
-
 </ion-content>

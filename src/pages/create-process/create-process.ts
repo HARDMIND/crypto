@@ -46,7 +46,7 @@ export class CreateProcessPage {
    // if(response){
       console.log("is true")
       var questionJson = {
-        "key":"question",
+        "key":"question&" + this.projectPhrase,
         "type":"string",
         "value":this.projectQuestion
       }
@@ -60,7 +60,6 @@ export class CreateProcessPage {
       /** result message  */
       this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
   //  }
-
   }
 
   addPublicKeyAlert() {

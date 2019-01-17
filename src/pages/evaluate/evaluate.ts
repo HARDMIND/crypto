@@ -31,6 +31,7 @@ export class EvaluatePage {
   async evaluateData(){
     if(this.messageProvider.alert(localStorage['projectPhrase'] == "" || localStorage['projectPhrase']  == null ||localStorage['projectPhrase'].length < 10, 
     "Need address",""))return;
+    
     const seed = this.wavesProvider.createSeedFromPhrase(localStorage['projectPhrase']);
 
     await this.wavesProvider.getData(seed.address).then(() => this.evaluationProvider.dataList = this.wavesProvider.calculatedData);
@@ -51,7 +52,6 @@ export class EvaluatePage {
     }else{
       this.isDisabled = true;
     }
-
   }
 
   /** call final evaluation and reinit entries */

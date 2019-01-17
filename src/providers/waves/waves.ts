@@ -33,39 +33,50 @@ export class WavesProvider {
     this.getDataList.subscribe(data => {
 
       var foundfinalData = data.find( dataChild => dataChild.key == "_finalOption");
-      /** if final data not in address data , then evaluate given data  */
-      if(foundfinalData != null){
-        /** Parse final Data   */
-        var splitChild = foundfinalData.value.split("&");
-        var finalData = new Data(splitChild[0]);
-        finalData.weightCalculated = splitChild[1];
-        this.calculatedData.push(finalData);
-      }else{
-        /** Get all questions  */
-        for(var i=0;i<data.length;i++){
-          var child = data[i];
-          var splitChild = child.value.split("&");
-          /** 1.option , 2.criteria,3.option weight, 4.criteria weight */
-          var option    = splitChild[0];
-          var criteria  = splitChild[1];
-          var optionWeight = splitChild[2];
-          var criteriaWeight = splitChild[3];
-          var newData = new Data(option,criteria,optionWeight,criteriaWeight);
-          this.dataList.push(newData);
-
-          var foundData = this.calculatedData.find( data => data.option == newData.option);
+      var isAdmin = data.find(dataChild => dataChild.key == "question");
+      
+      /* Admin == script creator, if is admin then can merge entries else get final result */
+      if(isAdmin != null){
+        var arrSplit = data.key.split(isAdmin);
+        console.log(arrSplit[1])
         
-          if(foundData == undefined){
-            console.log("Added "+ newData);
-            this.calculatedData.push(newData);
-          }else{
-            console.log("Added calculate "+ foundData);
-            foundData.weightCalculated += newData.weightCalculated;
+        /**evaluate given data  */
+        if(this.createSeedFromPhrase(localStorage['userPhrase']).keyPair.publicKey == arrSplit[1] ){
+          /** Get all questions  */
+          for(var i=0;i<data.length;i++){
+            var child = data[i];
+            var splitChild = child.value.split("&");
+            /** 1.option , 2.criteria,3.option weight, 4.criteria weight */
+            var option    = splitChild[0];
+            var criteria  = splitChild[1];
+            var optionWeight = splitChild[2];
+            var criteriaWeight = splitChild[3];
+            var newData = new Data(option,criteria,optionWeight,criteriaWeight);
+            this.dataList.push(newData);
+
+            var foundData = this.calculatedData.find( data => data.option == newData.option);
+          
+            if(foundData == undefined){
+              console.log("Added "+ newData);
+              this.calculatedData.push(newData);
+            }else{
+              console.log("Added calculate "+ foundData);
+              foundData.weightCalculated += newData.weightCalculated;
+            }
           }
         }
+      }else{
+        /* Get final result if not empty  */
+        if(foundfinalData != null){
+          /** Parse final Data   */
+          var splitChild = foundfinalData.value.split("&");
+          var finalData = new Data(splitChild[0]);
+          finalData.weightCalculated = splitChild[1];
+          this.calculatedData.push(finalData);
+        }else{
+          //this.outputText = "asda";
+        }
       }
-
-
     });
   }
 

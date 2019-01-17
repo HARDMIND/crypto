@@ -19,7 +19,7 @@ export class QocPage {
   public qocList = [];
   public textQOC:any;
   public inputOption:any;
-  public inputOptionWeight:any;
+  public inputEdgeWeight:any;
   public inputCriteria:any;
   public inputCriteriaWeight:any;
 
@@ -30,7 +30,7 @@ export class QocPage {
   /******************** Add QOC input to list *******************/
   addQOC(){
     /* Call error if input is wrong  */
-    if(this.messageProvider.alert( this.inputOption == "" || this.inputCriteria == "" || this.inputCriteriaWeight == "" || this.inputCriteriaWeight == "",
+    if(this.messageProvider.alert( this.inputOption == "" || this.inputCriteria == "" || this.inputEdgeWeight == "" || this.inputCriteriaWeight == "",
                                   "Error", "Question, Option or Criteria is empty")) return;
 
     /** Error if phrase is null */
@@ -52,7 +52,7 @@ export class QocPage {
     }
 
     /** get content from input  */
-    var value = this.inputOption + "&" + this.inputCriteria + "&"+this.inputOptionWeight + "&"+this.inputCriteriaWeight;
+    var value = this.inputOption + "&" + this.inputCriteria + "&"+this.inputEdgeWeight + "&"+this.inputCriteriaWeight;
     var oInput = {
       "key": counterChange   + "&"  + senderPK,
       "type":"string",
@@ -75,7 +75,7 @@ export class QocPage {
     this.inputOption = "";
     this.inputCriteria = "";
     this.inputCriteriaWeight = "";
-    this.inputOptionWeight = "";
+    this.inputEdgeWeight = "";
   }
 
   /******************** Send QOC Data  *******************/

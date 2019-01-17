@@ -26,7 +26,8 @@ export class HomePage {
     var message = '<p>Phrase: ' + seed.phrase + "</p>"+
                   "<p>Address: " + seed.address +  "</p>"+
                   '<p>PublicKey: ' + seed.keyPair.publicKey +"</p>"+
-                  "<p>PrivateKey: " + seed.keyPair.privateKey;
+                  "<p>PrivateKey: " + seed.keyPair.privateKey +"</p>"+
+                  "<p>Seed: " +seed +"</p>";
     this.messageProvider.alert(true,"Testnet Account created",message);
   }
 
