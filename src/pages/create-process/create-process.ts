@@ -46,7 +46,7 @@ export class CreateProcessPage {
    // if(response){
       console.log("is true")
       var questionJson = {
-        "key":"question&" + this.projectPhrase,
+        "key":"question",
         "type":"string",
         "value":this.projectQuestion
       }
