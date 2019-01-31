@@ -19,48 +19,53 @@ export class QocPage {
   public qocList = [];
   public textQOC:any;
   public inputOption:any;
-  public inputEdgeWeight:any;
   public inputCriteria:any;
   public inputCriteriaWeight:any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private messageProvider:MessagesProvider,
     private wavesProvider:WavesProvider) {}
+  
+  ionViewDidLoad(){
+    /** Count data from address */
+    var projectPhrase = this.wavesProvider.createSeedFromPhrase(localStorage['projectPhrase']);
+    this.wavesProvider.getData(projectPhrase.address, true);
+  }
 
   /******************** Add QOC input to list *******************/
   addQOC(){
     /* Call error if input is wrong  */
-    if(this.messageProvider.alert( this.inputOption == "" || this.inputCriteria == "" || this.inputEdgeWeight == "" || this.inputCriteriaWeight == "",
+    if(this.messageProvider.alert( this.inputOption == "" || this.inputCriteria == ""  || this.inputCriteriaWeight == "",
                                   "Error", "Question, Option or Criteria is empty")) return;
 
     /** Error if phrase is null */
     if(this.messageProvider.alert(localStorage['projectPhrase'] == "", "Error","Phrase cant be null"))return;
-
-    let counter = (this.qocList.length > 0) ? this.qocList.length  : 0;
-
-    var senderPK = this.wavesProvider.createSeedFromPhrase(localStorage['userPhrase']).keyPair.publicKey;
-
-    /** prepare counter  */
-    let counterChange = counter.toString();
-
-    if(counter.toString().length == 2){
-      counterChange = "0"+counter.toString();
-    }
-
-    if(counter.toString().length == 1){
-      counterChange = "00"+counter.toString();
-    }
+    
+    
+    var counter =  this.wavesProvider.count + (this.qocList.length/3);
 
     /** get content from input  */
-    var value = this.inputOption + "&" + this.inputCriteria + "&"+this.inputEdgeWeight + "&"+this.inputCriteriaWeight;
     var oInput = {
-      "key": counterChange   + "&"  + senderPK,
+      "key": Date.now() + "option" + counter,
       "type":"string",
-      "value":value
+      "value":this.inputOption
+    }
+    var cInput = {
+      "key": Date.now() + "criteria" + counter,
+      "type":"string",
+      "value":this.inputCriteria
+    }
+
+    var cwInput = {
+      "key": Date.now() + "criteriaWeight" + counter,
+      "type":"string",
+      "value":this.inputCriteriaWeight
     }
 
     /** push QOC to list */
     this.qocList.push(oInput);
+    this.qocList.push(cInput);
+    this.qocList.push(cwInput);
     var text = "";
 
     /** show users input */
@@ -75,7 +80,6 @@ export class QocPage {
     this.inputOption = "";
     this.inputCriteria = "";
     this.inputCriteriaWeight = "";
-    this.inputEdgeWeight = "";
   }
 
   /******************** Send QOC Data  *******************/

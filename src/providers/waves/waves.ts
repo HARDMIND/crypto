@@ -18,6 +18,7 @@ export class WavesProvider {
   dataList : Data[] = [];
   calculatedData:Data[] = [];
   getDataList :Observable<any>;
+  count : any;
 
   constructor(public httpClient: HttpClient) {
     console.log('Hello WavesProvider Provider');
@@ -26,11 +27,14 @@ export class WavesProvider {
   }
 
   /** get all data from adress */
-  public async getData(address){
+  public async getData(address, count=false){
     this.calculatedData = [];
     this.dataList = [];
     this.getDataList = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+address);
     this.getDataList.subscribe(data => {
+      if(count){
+        return this.count = data.length;
+      }
 
       var foundfinalData = data.find( dataChild => dataChild.key == "_finalOption");
       
