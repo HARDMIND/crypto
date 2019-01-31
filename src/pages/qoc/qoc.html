@@ -9,6 +9,37 @@
 
 
 <ion-content padding>
+
+    <ion-grid>
+        <button item-end ion-button clear (click)="addPublicKeyAlert()">
+            <ion-icon color="primary" name="add-circle"></ion-icon>Add option
+        </button>
+        <ion-row *ngFor="let qoc of qocData; let i = index; ">
+            <ion-col>
+                <ion-row>Option
+                    <ion-col>
+                        <br> {{qoc.option}}
+                        <button item-end ion-button clear (click)="addPublicKeyAlert()">
+                            <ion-icon color="primary" name="add-circle"></ion-icon>Add criteria
+                        </button>
+                    </ion-col>
+                </ion-row>
+    
+                <ion-row>Criteria 
+                    <ion-col *ngFor="let listData of qoc.criteriaList; let j = index; ">
+                        <br> {{listData}}
+                        <ion-item>
+                            <ion-label color="primary" floating>Criteria weight</ion-label>
+                            <ion-input ></ion-input>
+                        </ion-item>
+                    </ion-col>
+                </ion-row>
+            </ion-col>
+
+        </ion-row>
+    </ion-grid>
+
+<!-- 
     <ion-grid>
         <ion-col >
             <ion-row >
@@ -42,5 +73,5 @@
                 <button ion-button (click)="sendQOC()">Send</button>
             </ion-row>
         </ion-col>
-    </ion-grid>
+    </ion-grid> -->
 </ion-content>

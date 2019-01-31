@@ -42,7 +42,7 @@ export class WavesProvider {
       if(foundfinalData != null){
         /** Parse final Data   */
         var splitChild = foundfinalData.value.split("&");
-        var finalData = new Data(splitChild[0]);
+        var finalData = new Data(splitChild[0],"",0,0,[]);
         finalData.weightCalculated = splitChild[1];
         this.calculatedData.push(finalData);
       }else{
@@ -55,7 +55,7 @@ export class WavesProvider {
           var criteria  = splitChild[1];
           var optionWeight = splitChild[2];
           var criteriaWeight = splitChild[3];
-          var newData = new Data(option,criteria,optionWeight,criteriaWeight);
+          var newData = new Data(option,criteria,optionWeight,criteriaWeight,[]);
           this.dataList.push(newData);
 
           var foundData = this.calculatedData.find( data => data.option == newData.option);

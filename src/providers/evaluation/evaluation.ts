@@ -46,7 +46,7 @@ export class EvaluationProvider {
         {
           text: 'Save',
           handler: data => {
-            var newMergeData : Data = new Data(data.name);
+            var newMergeData : Data = new Data(data.name,"",0,0,[]);
             var newDataList : Data[] = [];
             for(var i=0;i<this.checkBoxes.length;i++){
               if(this.checkBoxes[i]){

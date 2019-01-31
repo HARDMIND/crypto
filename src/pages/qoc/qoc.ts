@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
+import { Data } from '../../app/Data';
 declare var require: any;
 /**
  * Generated class for the QocPage page.
@@ -21,15 +22,21 @@ export class QocPage {
   public inputOption:any;
   public inputCriteria:any;
   public inputCriteriaWeight:any;
+  public qocData : Data[] = [];
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private messageProvider:MessagesProvider,
     private wavesProvider:WavesProvider) {}
   
   ionViewDidLoad(){
+    this.qocData.push(new Data("test","",0,0,['asd','asd','asd','asd','asd','asd']));
+    this.qocData.push(new Data("test","",0,0,['asd','asd']));
+    
     /** Count data from address */
-    var projectPhrase = this.wavesProvider.createSeedFromPhrase(localStorage['projectPhrase']);
-    this.wavesProvider.getData(projectPhrase.address, true);
+    if(localStorage['projectPhrase'] != null && localStorage['projectPhrase'] != ""){
+      var projectPhrase = this.wavesProvider.createSeedFromPhrase(localStorage['projectPhrase']);
+      this.wavesProvider.getData(projectPhrase.address, true);
+    }
   }
 
   /******************** Add QOC input to list *******************/
@@ -40,7 +47,6 @@ export class QocPage {
 
     /** Error if phrase is null */
     if(this.messageProvider.alert(localStorage['projectPhrase'] == "", "Error","Phrase cant be null"))return;
-    
     
     var counter =  this.wavesProvider.count + (this.qocList.length/3);
 

@@ -42,7 +42,7 @@
     "zone.js": "0.8.26"
   },
   "devDependencies": {
-    "@ionic/app-scripts": "3.2.0",
+    "@ionic/app-scripts": "^3.2.2",
     "@ionic/lab": "1.0.14",
     "@types/node": "^10.12.10",
     "@types/request": "^2.48.1",
