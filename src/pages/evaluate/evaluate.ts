@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { HomePage } from '../home/home';
 import { Data } from '../../app/Data';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
@@ -13,7 +14,8 @@ import { EvaluationProvider } from '../../providers/evaluation/evaluation';
 export class EvaluatePage {
   
   public isDisabled = true;
-  mergedData:Data[] = [];
+  public stepOne: boolean = true;
+  public stepTwo: boolean = false;
 
   constructor(public navCtrl: NavController, 
               public navParams: NavParams,
@@ -22,22 +24,11 @@ export class EvaluatePage {
               public evaluationProvider: EvaluationProvider) {}
 
   ionViewDidLoad(){
-    this.evaluationProvider.dataList = this.wavesProvider.dataList;
+    this.wavesProvider.getData();
+    this.evaluationProvider.dataList = this.wavesProvider.QOCData;
   }
 
   /******************** Evaluate data  *******************/
-
-  /** evaluate QOC data from all users  */
-  async evaluateData(){
-    if(this.messageProvider.alert(localStorage['projectPhrase'] == "" || localStorage['projectPhrase']  == null ||localStorage['projectPhrase'].length < 10, 
-    "Need address",""))return;
-    
-    const seed = this.wavesProvider.createSeedFromPhrase(localStorage['projectPhrase']);
-
-    await this.wavesProvider.getData(seed.address).then(() => this.evaluationProvider.dataList = this.wavesProvider.calculatedData);
-    this.evaluationProvider.initCheckBox();
-  } 
-
   /** check if 2 or more checkboxes are checked */
   checked(){
     var counter = 0;
@@ -54,10 +45,34 @@ export class EvaluatePage {
     }
   }
 
-  /** call final evaluation and reinit entries */
-  finalEvaluation(){
-    var data = this.evaluationProvider.finalEvaluation();
-    this.messageProvider.alert(true,"Rsult","Option: " + data.option + " value: " + data.weightCalculated);
+  /** Go to next step  */
+  goToStepTwo(){
+    let alert = this.messageProvider.alertCtrl.create({
+      title: 'Do you really want to go to the next step?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Yes',
+          handler: data => {
+            this.stepOne = false;
+            this.stepTwo = true;
+          }
+        }
+      ]
+    });
+    alert.present();
   }
+
+  sendFinalData(){
+    this.evaluationProvider.sendFinalOptions(this.evaluationProvider.dataList,this.navCtrl,HomePage);
+  }
+
+
 
 }

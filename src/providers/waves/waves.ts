@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Data } from '../../app/Data';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import { MessagesProvider } from '../messages/messages';
 declare var require: any;
 
 /*
@@ -13,72 +14,77 @@ declare var require: any;
 */
 @Injectable()
 export class WavesProvider {
+  projectSeed : any;
   wavesApi :any;
   waves: any;
   dataList : Data[] = [];
-  calculatedData:Data[] = [];
-  getDataList :Observable<any>;
-  count : any;
+  QOCData : Data[] = [];
+  finalData: Data = new Data("");
+  isFinal:boolean = false;
 
   constructor(public httpClient: HttpClient) {
-    console.log('Hello WavesProvider Provider');
     this.wavesApi =  require('@waves/waves-api');
     this.waves = this.wavesApi.create(this.wavesApi.TESTNET_CONFIG);
+    this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
   }
 
   /** get all data from adress */
-  public async getData(address, count=false){
-    this.calculatedData = [];
+  public async getData(){
+    this.QOCData = [];
     this.dataList = [];
-    this.getDataList = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+address);
-    this.getDataList.subscribe(data => {
-      if(count){
-        return this.count = data.length;
-      }
+    var getDataList:Observable<any> = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+this.projectSeed.address);
+    
+    getDataList.subscribe(allData => {
 
-      var foundfinalData = data.find( dataChild => dataChild.key == "_finalOption");
+      /** Check if final data is available */
+      var finalData:any = allData.find(element => element.key.indexOf('final') >= 0);
       
-      /* Admin == script creator, if is admin then can merge entries else get final result */
-      if(foundfinalData != null){
-        /** Parse final Data   */
-        var splitChild = foundfinalData.value.split("&");
-        var finalData = new Data(splitChild[0],"",0,0,[]);
-        finalData.weightCalculated = splitChild[1];
-        this.calculatedData.push(finalData);
+
+      if(finalData != undefined ){
+        console.log(finalData);
+        this.finalData = new Data(finalData.value);
+        this.isFinal = true;
       }else{
-        /** Get all questions  */
-        for(var i=0;i<data.length;i++){
-          var child = data[i];
-          var splitChild = child.value.split("&");
-          /** 1.option , 2.criteria,3.option weight, 4.criteria weight */
-          var option    = splitChild[0];
-          var criteria  = splitChild[1];
-          var optionWeight = splitChild[2];
-          var criteriaWeight = splitChild[3];
-          var newData = new Data(option,criteria,optionWeight,criteriaWeight,[]);
-          this.dataList.push(newData);
-
-          var foundData = this.calculatedData.find( data => data.option == newData.option);
-
-          if(foundData == undefined){
-            console.log("Added "+ newData);
-            this.calculatedData.push(newData);
-          }else{
-            console.log("Added calculate "+ foundData);
-            foundData.weightCalculated += newData.weightCalculated;
-          }
-        }
+        console.log("after");
+        /** Search for all options */
+        var allOptions = allData.filter(element => element.key.indexOf('option') >= 0);
+  
+        /** go through all options and search for criteria and criteriaweight */
+        allOptions.forEach(element => {
+          var stringIndex = element.key.indexOf('option');
+          /** Get option counter to get criteria and criteriaweight */
+          var elementOptionCounter = element.key.substring(stringIndex+6);
+  
+          var qocData : Data = new Data(element.value);
+          
+          /** Find all criteria */
+          var criterialist = allData.filter(data => data.key.indexOf('criteria'+elementOptionCounter) >= 0);
+          criterialist.forEach(element => {
+            qocData.criteriaList.push(element.value);
+          });
+  
+          /** Find all criteriaweight */
+          var criteriaWeightlist = allData.filter(data => data.key.indexOf('criteriaWeight'+elementOptionCounter) >= 0);
+          criteriaWeightlist.forEach(element => {
+            qocData.criteriaWeightList.push(element.value);
+            qocData.edgeWeightList.push(0);
+          });
+  
+          /** Push data to array */
+          this.QOCData.push(qocData);
+        });
       }
+
     });
   }
 
   /** Send data to nodes  */
-  public async sendData(data,phraseSender,phraseProcess){
+  public async sendData(data:any,projectPhrase = localStorage['projectPhrase'],userPhrase = localStorage['userPhrase']){
       // /** create process seed from phrase */
-      const seedProcess =this.createSeedFromPhrase(phraseProcess) ;
+      const seedProcess =this.createSeedFromPhrase(projectPhrase) ;
   
       /** create sender seed from phrase */
-      const seedSender = this.createSeedFromPhrase(phraseSender) ;
+      const seedSender = this.createSeedFromPhrase(userPhrase) ;
 
       /** create qoc data object */
       let dataObj ={
@@ -182,5 +188,60 @@ export class WavesProvider {
     
   }
 
+  /******************** Send QOC Data  *******************/
+  public async sendQOC(qocDataToSend:Data[], messageProvider:MessagesProvider, isFinal:boolean = false){
 
+    /** Check if qocList is not empty */
+    if(messageProvider.alert(qocDataToSend.length == 0, "Error", "Need data"))return;
+
+    var newList = [];
+    var counterAllData = this.QOCData.length;
+    var counterOption = 0;
+    var counterCriteria = 0;
+    var counterCriteriaWeight = 0;
+
+    qocDataToSend.forEach(element => {
+      
+      /** Add option to list  */
+      var option = {
+        "key": Date.now() + "option" + (counterOption +counterAllData),
+        "type":"string",
+        "value":element.option
+      }
+      newList.push(option);
+
+      /* Add criteria to list  */
+      element.criteriaList.forEach(criteriaElement => {
+        var criteria = {
+          "key": Date.now() + "criteria" + (counterOption +counterAllData) + "&"+counterCriteria,
+          "type":"string",
+          "value":criteriaElement
+        }
+        newList.push(criteria);
+        counterCriteria+=1;
+      });
+
+      /** Add criteriaweight to list */
+      element.criteriaWeightList.forEach(criteriaWeightElement => {
+        var criteriaWeight = {
+          "key": Date.now() + "criteriaWeight" + (counterOption +counterAllData)+ "&"+counterCriteriaWeight,
+          "type":"string",
+          "value":criteriaWeightElement
+        }
+        newList.push(criteriaWeight);
+        counterCriteriaWeight+=1;
+      });
+
+      counterOption+=1;
+    });
+
+    /* send data */
+    if(this.sendData(newList)){
+      /** return result */
+      messageProvider.alert(true,"Output","QOC Data eingefügt \n");
+    }else{
+      messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
+    }
+    
+  }
 }

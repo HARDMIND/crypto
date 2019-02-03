@@ -1,30 +1,21 @@
-import { List } from "ionic-angular";
-
 export class Data {
     public option: any ;
-    public criteria:any;
-    public criteriaWeight:any;
-    public optionWeight:any;
-    public weightCalculated : number ;
-    public criteriaList:any = [];
-    public criteriaWeightList:any = [];
+    public criteriaList:string[]= [];
+    public criteriaWeightList:any[] = [];
+    public edgeWeightList:number[]= [];
 
-    constructor(option : any, criteria:any = "", optionWeight:any = 0,criteriaWeight:any = 0, list:any[]){
+    constructor(option : any){
         this.option = option;
-        this.criteria = criteria;
-        this.optionWeight = optionWeight ;
-        this.criteriaWeight = criteriaWeight;
-        this.weightCalculated = this.criteriaWeight * this.optionWeight ;
-        this.criteriaList = list;
     }
 
     public toString(){
-        return this.option + " " + this.criteria + " "+this.optionWeight +" "+ this.criteriaWeight + " " + this.weightCalculated;
+        return this.option + " " ;
     }
 
     public addCriteria(criteria:string){
         this.criteriaList.push(criteria);
-        this.criteriaWeightList.push(0);
+        this.criteriaWeightList.push("");
+        this.edgeWeightList.push(0);
     }
     
     public changeCriteriaWeight(criteriaWeight, index:number){

@@ -29,84 +29,127 @@ export class QocPage {
     private wavesProvider:WavesProvider) {}
   
   ionViewDidLoad(){
-    this.qocData.push(new Data("test","",0,0,['asd','asd','asd','asd','asd','asd']));
-    this.qocData.push(new Data("test","",0,0,['asd','asd']));
+    // this.qocData.push(new Data("test","",0,0,['asd','asd','asd','asd','asd','asd']));
+    // this.qocData.push(new Data("test","",0,0,['asd','asd']));
     
     /** Count data from address */
     if(localStorage['projectPhrase'] != null && localStorage['projectPhrase'] != ""){
-      var projectPhrase = this.wavesProvider.createSeedFromPhrase(localStorage['projectPhrase']);
-      this.wavesProvider.getData(projectPhrase.address, true);
+      this.wavesProvider.getData();
     }
+  }
+
+  /** CREATE NEW QOC DATA WITH OPTION NAME */
+  addOptionBtn() {
+    let alert = this.messageProvider.alertCtrl.create({
+      title: 'Add option',
+      inputs: [
+        {
+          name: 'option',
+          placeholder: 'Option'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Add',
+          handler: data => {
+            this.qocData.push(new Data(data.option));
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  /** ADD CRITERIA TO QOC DATA  */
+  addCriteriaBtn(qocData:Data){
+    let alert = this.messageProvider.alertCtrl.create({
+      title: 'Add criteria',
+      inputs: [
+        {
+          name: 'criteria',
+          placeholder: 'Criteria'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Add',
+          handler: data => {
+            if(data.criteria.length > 0){
+              qocData.addCriteria(data.criteria);
+            }
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
   /******************** Add QOC input to list *******************/
-  addQOC(){
-    /* Call error if input is wrong  */
-    if(this.messageProvider.alert( this.inputOption == "" || this.inputCriteria == ""  || this.inputCriteriaWeight == "",
-                                  "Error", "Question, Option or Criteria is empty")) return;
+  // addQOC(){
+  //   /* Call error if input is wrong  */
+  //   if(this.messageProvider.alert( this.inputOption == "" || this.inputCriteria == ""  || this.inputCriteriaWeight == "",
+  //                                 "Error", "Question, Option or Criteria is empty")) return;
 
-    /** Error if phrase is null */
-    if(this.messageProvider.alert(localStorage['projectPhrase'] == "", "Error","Phrase cant be null"))return;
+  //   /** Error if phrase is null */
+  //   if(this.messageProvider.alert(localStorage['projectPhrase'] == "", "Error","Phrase cant be null"))return;
     
-    var counter =  this.wavesProvider.count + (this.qocList.length/3);
+  //   var counter =  this.wavesProvider.count + (this.qocList.length/3);
 
-    /** get content from input  */
-    var oInput = {
-      "key": Date.now() + "option" + counter,
-      "type":"string",
-      "value":this.inputOption
-    }
-    var cInput = {
-      "key": Date.now() + "criteria" + counter,
-      "type":"string",
-      "value":this.inputCriteria
-    }
+  //   /** get content from input  */
+  //   var oInput = {
+  //     "key": Date.now() + "option" + counter,
+  //     "type":"string",
+  //     "value":this.inputOption
+  //   }
+  //   var cInput = {
+  //     "key": Date.now() + "criteria" + counter,
+  //     "type":"string",
+  //     "value":this.inputCriteria
+  //   }
 
-    var cwInput = {
-      "key": Date.now() + "criteriaWeight" + counter,
-      "type":"string",
-      "value":this.inputCriteriaWeight
-    }
+  //   var cwInput = {
+  //     "key": Date.now() + "criteriaWeight" + counter,
+  //     "type":"string",
+  //     "value":this.inputCriteriaWeight
+  //   }
 
-    /** push QOC to list */
-    this.qocList.push(oInput);
-    this.qocList.push(cInput);
-    this.qocList.push(cwInput);
-    var text = "";
+  //   /** push QOC to list */
+  //   this.qocList.push(oInput);
+  //   this.qocList.push(cInput);
+  //   this.qocList.push(cwInput);
+  //   var text = "";
 
-    /** show users input */
-    for (let i=0; i<this.qocList.length; i++) {
-      text+= this.qocList[i].value + "\n";
-    }
+  //   /** show users input */
+  //   for (let i=0; i<this.qocList.length; i++) {
+  //     text+= this.qocList[i].value + "\n";
+  //   }
 
-    /** set out html text */
-    this.textQOC = text;
+  //   /** set out html text */
+  //   this.textQOC = text;
 
-    /** reset input */
-    this.inputOption = "";
-    this.inputCriteria = "";
-    this.inputCriteriaWeight = "";
-  }
+  //   /** reset input */
+  //   this.inputOption = "";
+  //   this.inputCriteria = "";
+  //   this.inputCriteriaWeight = "";
+  // }
 
-  /******************** Send QOC Data  *******************/
+ /******************* SEND QOC DATA ******************/
   async sendQOC(){
-
-    /** validation  */
-    if(this.messageProvider.alert(localStorage['projectPhrase'] == null ||localStorage['projectPhrase'].length < 15 || localStorage['userPhrase'] == null || localStorage['userPhrase'].length < 15,
-          "Error","Need processPhrase / senderPhrase  or phrase is to short (min length 15)")) return;
-
-    /** Check if qocList is not empty */
-    if(this.messageProvider.alert(this.qocList.length == 0, "Error", "Need data"))return;
-
-    /* send data */
-    if(this.wavesProvider.sendData(this.qocList,localStorage['userPhrase'],localStorage['projectPhrase'])){
-      /** return result */
-      this.messageProvider.alert(true,"Output","QOC Data eingefügt \n");
-    }else{
-      this.messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
-    }
-
-
+    this.wavesProvider.sendQOC(this.qocData,this.messageProvider);
   }
 
 }

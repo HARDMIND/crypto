@@ -8,27 +8,15 @@
 </ion-header>
 
 <ion-content padding>
-    <br>
-    <br>
-    <ion-grid>
-        <ion-col >
-            <ion-row >
-                <button ion-button (click)="evaluateData()">Evaluate</button>
-            </ion-row>
-        </ion-col>
-    </ion-grid>
-    <br>
-    <br>
-    <ion-grid *ngIf="evaluationProvider.dataList.length > 0">
+    <!-- ------------------STEP ONE--------------- -->
+    <p *ngIf="stepOne == true && wavesProvider.isFinal == false">Step #1: Merge options</p>
+    <ion-grid *ngIf="evaluationProvider.dataList.length > 0 && stepOne == true">
         <ion-row>
             <ion-col>
                 #
             </ion-col>
             <ion-col>
                    Option
-            </ion-col>
-            <ion-col>
-                   Calculated weight
             </ion-col>
         </ion-row>
         <ion-row *ngFor="let data of evaluationProvider.dataList;let i = index ">
@@ -38,13 +26,44 @@
             <ion-col>
                 {{data.option}}
             </ion-col>
-            <ion-col>
-                {{data.weightCalculated}}
+        </ion-row>
+    </ion-grid>
+    <button  *ngIf="evaluationProvider.dataList.length > 0 && stepOne == true && wavesProvider.isFinal == false" disabled ion-button round [disabled]="isDisabled" (click)="evaluationProvider.mergeEntries()">Merge</button>
+    <button  *ngIf="stepOne == true && wavesProvider.isFinal == false" ion-button round (click)="goToStepTwo()">To step #2</button>
+
+    <!-- ------------------STEP TWO--------------- -->
+    <p *ngIf="stepTwo == true">Step #2: Add Edges value</p>
+    <ion-grid *ngIf="stepTwo == true">
+        <ion-row>
+            <ion-col class="option" *ngFor="let qoc of evaluationProvider.dataList; let i = index; ">
+                <p class="borderBottom"> Option {{i}}</p> 
+                <ion-row>
+                    <ion-col>
+                        <br> {{qoc.option}}
+                    </ion-col>
+                </ion-row>
+                <p class="borderBottom"> Criteria {{i}}</p> 
+                <ion-row class="criteria">
+                    <ion-col class="criteria" *ngFor="let listData of qoc.criteriaList; let j = index; ">
+                        <br> {{listData}}
+                        <ion-item>
+                            <ion-label color="primary" floating>Criteria weight</ion-label>
+                            <ion-input disabled="true" [(ngModel)]="qoc.criteriaWeightList[j]" type="number" placeholder="Weight" floating ></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label color="primary" floating>Edge weight</ion-label>
+                            <ion-input [(ngModel)]="qoc.edgeWeightList[j]" type="number" placeholder="Edge" floating ></ion-input>
+                        </ion-item>
+                    </ion-col>
+                </ion-row>
             </ion-col>
         </ion-row>
     </ion-grid>
-    <button  *ngIf="evaluationProvider.dataList.length > 0" disabled ion-button round [disabled]="isDisabled" (click)="evaluationProvider.mergeEntries()">Merge</button>
-    <button  *ngIf="evaluationProvider.dataList.length > 0" ion-button round (click)="finalEvaluation()">Evaluate</button>
+    <button  *ngIf="stepTwo == true" ion-button round (click)="sendFinalData()">Evaluate data</button>
+
+    <!-- ------------------STEP THREE--------------- -->
+    <p *ngIf="wavesProvider.isFinal == true">Step #3: Final result</p>
+    <p *ngIf="wavesProvider.isFinal == true">{{wavesProvider.finalData.option}}</p>
 </ion-content>
 
 

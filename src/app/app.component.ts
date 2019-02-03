@@ -2,7 +2,6 @@ import { Component, ViewChild, NgZone } from '@angular/core';
 import { Platform, Nav } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import {PagesProvider} from "../providers/pages/pages";
 import { MessagesProvider } from '../providers/messages/messages';
 import { WavesProvider } from '../providers/waves/waves';
 import { LoginPage } from '../pages/login/login';
@@ -20,7 +19,6 @@ export class MyApp {
     statusBar: StatusBar,
     splashScreen: SplashScreen,
     zone : NgZone,
-    pageProvider : PagesProvider,
     wavesProvider: WavesProvider,
     messageProvider : MessagesProvider
     ) {
@@ -29,10 +27,6 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
-
-      zone.run(() => {
-        this.pages = pageProvider.getPages();
-      });
 
       // console.log(pageProvider.getPages());
     });

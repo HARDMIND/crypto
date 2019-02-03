@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { WavesProvider } from '../waves/waves';
 import { Data } from '../../app/Data';
-import { AlertController } from 'ionic-angular';
+import { AlertController, NavController } from 'ionic-angular';
 
 /*
   Generated class for the EvaluationProvider provider.
@@ -20,11 +20,11 @@ export class EvaluationProvider {
   /** reinit all checkboxes  */
   initCheckBox(){
     this.checkBoxes = [];
-    for(var i = 0;i<this.dataList.length; i++){
+    for(var i = 0;i<this.dataList.length+1; i++){
       this.checkBoxes.push(false);
     }
   }
-  
+
   /** merge selected entries to one entry  */
   public mergeEntries(){
     let alert = this.alertCtrl.create({
@@ -46,18 +46,83 @@ export class EvaluationProvider {
         {
           text: 'Save',
           handler: data => {
-            var newMergeData : Data = new Data(data.name,"",0,0,[]);
+            var newMergeData : Data = new Data(data.name);
             var newDataList : Data[] = [];
+
             for(var i=0;i<this.checkBoxes.length;i++){
               if(this.checkBoxes[i]){
-                newMergeData.weightCalculated += this.dataList[i].weightCalculated;
+                this.dataList[i].criteriaList.forEach(element => {
+                  newMergeData.criteriaList.push(element);
+                });
+                this.dataList[i].criteriaWeightList.forEach(element => {
+                  newMergeData.criteriaWeightList.push(element);
+                });
+                console.log(this.dataList[i]);
               }else{
                 newDataList.push(this.dataList[i]);
               }
             }
+            console.log(newMergeData);
             newDataList.push(newMergeData);
+
             this.dataList = newDataList;
             this.initCheckBox();
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  public sendFinalOptions(qocData:Data[],navCtrl: NavController,page){
+    /** calculate all  */
+    var highestScore = 0;
+    var highestScoreData : Data ;
+    qocData.forEach(element=>{
+      var localScore = 0;
+      for(var i=0;i<element.criteriaList.length;i++){
+        localScore += element.criteriaWeightList[i] * element.edgeWeightList[i];
+      }
+
+      if(localScore > highestScore){
+        highestScore = localScore;
+        highestScoreData = element;
+      }
+    });
+
+    let alertEvaluation = this.alertCtrl.create({
+      title: 'Data with highest value: '+highestScoreData.option + " value: " + highestScore,
+      buttons: [
+        {
+          text: 'Ok',
+          handler: data => {
+            //navCtrl.push(page);
+            
+          }
+        }
+      ]
+    });
+
+    let alert = this.alertCtrl.create({
+      title: 'Do you really want to evaluate your data?',
+      buttons: [
+        {
+          text: 'No',
+          handler: data => {
+          }
+        },
+        {
+          text: 'Yes',
+          handler: data => {
+            if(highestScoreData != undefined){
+              var finalOption = {
+                "key": Date.now() + "final",
+                "type":"string",
+                "value":highestScoreData.option
+              }
+              this.wavesProvider.sendData([finalOption])
+            }
+            alertEvaluation.present();
           }
         }
       ]
@@ -72,10 +137,10 @@ export class EvaluationProvider {
 
     /** get the data with max weight value  */
     for(var i=0;i<this.dataList.length;i++){
-      if(this.dataList[i].weightCalculated > maxValue){
-        maxValue = this.dataList[i].weightCalculated;
-        maxValueData = this.dataList[i];
-      }
+      // if(this.dataList[i].weightCalculated > maxValue){
+      //   //maxValue = this.dataList[i].weightCalculated;
+      //   maxValueData = this.dataList[i];
+      // }
     }
 
     /** send the option with maxvalue to blockchain*/
@@ -83,11 +148,11 @@ export class EvaluationProvider {
       var data = [{
         "key": "_finalOption",
         "type":"string",
-        "value":maxValueData.option +"&"+maxValueData.weightCalculated
+        "value":maxValueData.option +"&"//+maxValueData.weightCalculated
       }]
       
       /** send data to blockchain */
-      this.wavesProvider.sendData(data, localStorage['userPhrase'], localStorage['projectPhrase']);
+      this.wavesProvider.sendData(data);
       console.log(data); 
 
       /** refresh list  */

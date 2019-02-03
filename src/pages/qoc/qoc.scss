@@ -1,6 +1,18 @@
 page-qoc {
     ion-row{
         margin: auto;
-        width: 80%;
+        width: 90%;
+    }
+
+    .borderBottom{
+        border-bottom: 1px solid grey;
+    }
+
+    .option{
+        width: 100%;
+    }
+    .criteria{
+        width: 100%;
+        margin: auto;
     }
 }
