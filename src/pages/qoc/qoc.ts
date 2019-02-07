@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
 import { Data } from '../../app/Data';
@@ -26,12 +26,13 @@ export class QocPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private messageProvider:MessagesProvider,
-    private wavesProvider:WavesProvider) {}
-  
+    private wavesProvider:WavesProvider,
+              private modalCtrl : ModalController) {}
+
   ionViewDidLoad(){
     // this.qocData.push(new Data("test","",0,0,['asd','asd','asd','asd','asd','asd']));
     // this.qocData.push(new Data("test","",0,0,['asd','asd']));
-    
+
     /** Count data from address */
     if(localStorage['projectPhrase'] != null && localStorage['projectPhrase'] != ""){
       this.wavesProvider.getData();
@@ -106,7 +107,7 @@ export class QocPage {
 
   //   /** Error if phrase is null */
   //   if(this.messageProvider.alert(localStorage['projectPhrase'] == "", "Error","Phrase cant be null"))return;
-    
+
   //   var counter =  this.wavesProvider.count + (this.qocList.length/3);
 
   //   /** get content from input  */
@@ -152,4 +153,21 @@ export class QocPage {
     this.wavesProvider.sendQOC(this.qocData,this.messageProvider);
   }
 
+  openCriteriaView(data:Data) {
+    this.modalCtrl.create(QocAddCriteriaPage, {
+      qocData : data
+    }).present();
+  }
+
+}
+
+
+@Component({
+  selector: 'qocaddcriteria',
+  templateUrl: 'addCriteria.html',
+})
+export class QocAddCriteriaPage {
+  constructor() {
+
+  }
 }

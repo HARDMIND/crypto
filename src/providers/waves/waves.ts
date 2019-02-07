@@ -25,7 +25,17 @@ export class WavesProvider {
   constructor(public httpClient: HttpClient) {
     this.wavesApi =  require('@waves/waves-api');
     this.waves = this.wavesApi.create(this.wavesApi.TESTNET_CONFIG);
-    this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
+
+    if(localStorage['userPhrase'] != null)  {
+      console.log("Userphrase undef");
+      this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
+    }
+
+    if(!localStorage['projectPhrase'] || localStorage['projectPhrase'] == null || localStorage['projectPhrase'] == 'undefined') {
+      console.log("Phase vorhanden");
+      // this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
+
+    }
   }
 
   /** get all data from adress */
@@ -33,12 +43,12 @@ export class WavesProvider {
     this.QOCData = [];
     this.dataList = [];
     var getDataList:Observable<any> = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+this.projectSeed.address);
-    
+
     getDataList.subscribe(allData => {
 
       /** Check if final data is available */
       var finalData:any = allData.find(element => element.key.indexOf('final') >= 0);
-      
+
 
       if(finalData != undefined ){
         console.log(finalData);
@@ -48,29 +58,30 @@ export class WavesProvider {
         console.log("after");
         /** Search for all options */
         var allOptions = allData.filter(element => element.key.indexOf('option') >= 0);
-  
+
         /** go through all options and search for criteria and criteriaweight */
         allOptions.forEach(element => {
           var stringIndex = element.key.indexOf('option');
           /** Get option counter to get criteria and criteriaweight */
           var elementOptionCounter = element.key.substring(stringIndex+6);
-  
+
           var qocData : Data = new Data(element.value);
-          
+
           /** Find all criteria */
           var criterialist = allData.filter(data => data.key.indexOf('criteria'+elementOptionCounter) >= 0);
           criterialist.forEach(element => {
             qocData.criteriaList.push(element.value);
           });
-  
+
           /** Find all criteriaweight */
           var criteriaWeightlist = allData.filter(data => data.key.indexOf('criteriaWeight'+elementOptionCounter) >= 0);
           criteriaWeightlist.forEach(element => {
             qocData.criteriaWeightList.push(element.value);
             qocData.edgeWeightList.push(0);
           });
-  
+
           /** Push data to array */
+          console.log(qocData);
           this.QOCData.push(qocData);
         });
       }
@@ -82,7 +93,7 @@ export class WavesProvider {
   public async sendData(data:any,projectPhrase = localStorage['projectPhrase'],userPhrase = localStorage['userPhrase']){
       // /** create process seed from phrase */
       const seedProcess =this.createSeedFromPhrase(projectPhrase) ;
-  
+
       /** create sender seed from phrase */
       const seedSender = this.createSeedFromPhrase(userPhrase) ;
 
@@ -96,7 +107,7 @@ export class WavesProvider {
 
       /** prepare QOC data transaction object*/
       const dataTx = await this.waves.tools.createTransaction("data", dataObj);
-      
+
       /** add proof to QOC data transaction  */
       dataTx.addProof(seedSender.keyPair.privateKey);
 
@@ -109,9 +120,10 @@ export class WavesProvider {
 
   /** Create account from phrase */
   public createSeedFromPhrase(phrase){
+    console.log(phrase);
     return this.waves.Seed.fromExistingPhrase(phrase) ;
   }
-  
+
   /** create new account */
   public createSeed(){
     return this.waves.Seed.create();
@@ -123,9 +135,9 @@ export class WavesProvider {
     // json to string sample: JSON.stringify(txJSON)
     /** create seed from phrase */
     const seed = this.createSeedFromPhrase(phrase) ;
-    
+
     /** prepare Script */
-    let scriptBodyNew = 
+    let scriptBodyNew =
     `match tx {
       case tx:DataTransaction =>{`;
 
@@ -137,7 +149,7 @@ export class WavesProvider {
 
     for(let i=0; i<list.length;i++){
         scriptBodyNew += (i == list.length-1 && i == list.length-1) ? ` l${i}`:` l${i} +` ;
-      
+
     }
 
     scriptBodyNew += `) == 1 }case _ =>  throw("State should be a data transaction")}`;
@@ -171,7 +183,7 @@ export class WavesProvider {
     var seedFrom = this.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
     const seedTo = this.createSeed();
 
-    var tr = transfer({ 
+    var tr = transfer({
       amount: 5,
       recipient: seedTo.address,
       senderPublicKey:seedFrom.keyPair.publicKey,
@@ -185,7 +197,7 @@ export class WavesProvider {
     var st = signTx(tr,seedFrom.keyPair.privateKey);
     console.log(st)
     await this.waves.API.Node.transactions.rawBroadcast(st);
-    
+
   }
 
   /******************** Send QOC Data  *******************/
@@ -201,7 +213,7 @@ export class WavesProvider {
     var counterCriteriaWeight = 0;
 
     qocDataToSend.forEach(element => {
-      
+
       /** Add option to list  */
       var option = {
         "key": Date.now() + "option" + (counterOption +counterAllData),
@@ -242,6 +254,6 @@ export class WavesProvider {
     }else{
       messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
     }
-    
+
   }
 }

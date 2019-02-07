@@ -5,7 +5,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { HomePage } from '../pages/home/home';
 import { MyApp } from './app.component';
-import { QocPage } from '../pages/qoc/qoc';
+import {QocAddCriteriaPage, QocPage} from '../pages/qoc/qoc';
 import { CreateProcessPage } from '../pages/create-process/create-process';
 import { DeleteProcessPage } from '../pages/delete-process/delete-process';
 import { EvaluatePage } from '../pages/evaluate/evaluate';
@@ -24,7 +24,8 @@ import { EvaluationProvider } from '../providers/evaluation/evaluation';
     CreateProcessPage,
     DeleteProcessPage,
     EvaluatePage,
-    LoginPage
+    LoginPage,
+    QocAddCriteriaPage
   ],
   imports: [
     BrowserModule,
@@ -39,7 +40,8 @@ import { EvaluationProvider } from '../providers/evaluation/evaluation';
     CreateProcessPage,
     DeleteProcessPage,
     EvaluatePage,
-    LoginPage
+    LoginPage,
+    QocAddCriteriaPage
   ],
   providers: [
     StatusBar,

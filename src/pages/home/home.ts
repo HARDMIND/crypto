@@ -16,8 +16,11 @@ export class HomePage {
 
   constructor(public navCtrl: NavController,
     private messageProvider:MessagesProvider,
-    private wavesProvider:WavesProvider) {}
-  
+    private wavesProvider:WavesProvider) {
+
+    console.log(localStorage['projectPhrase']);
+  }
+
   /******************** create new waves acc  *******************/
   createAccount(){
     const seed = this.wavesProvider.createSeed();
@@ -35,7 +38,7 @@ export class HomePage {
   openAddQoc(){
     this.navCtrl.push(QocPage);
   }
-  
+
   /******************** open create script page  *******************/
   openCreateProcess(){
     this.navCtrl.push(CreateProcessPage);
@@ -45,7 +48,7 @@ export class HomePage {
   openDeleteProcess(){
     this.navCtrl.push(DeleteProcessPage);
   }
-  
+
   /******************** open evaluate page  *******************/
   openEvaluateQoc(){
     this.navCtrl.push(EvaluatePage);
@@ -56,5 +59,5 @@ export class HomePage {
     localStorage['projectPhras']="";
     this.navCtrl.push(LoginPage);
   }
-  
+
 }

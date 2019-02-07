@@ -17,8 +17,9 @@ export class Data {
         this.criteriaWeightList.push("");
         this.edgeWeightList.push(0);
     }
-    
+
     public changeCriteriaWeight(criteriaWeight, index:number){
         this.criteriaWeightList[index] = criteriaWeight;
     }
+
 }
