@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
-import { Data } from '../../app/Data';
+import {Data, Question} from '../../app/Data';
 declare var require: any;
 /**
  * Generated class for the QocPage page.
@@ -22,12 +22,17 @@ export class QocPage {
   public inputOption:any;
   public inputCriteria:any;
   public inputCriteriaWeight:any;
-  public qocData : Data[] = [];
+  private question : Question = new Question();
+
+  // public qocData : Data[] = [];
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private messageProvider:MessagesProvider,
     private wavesProvider:WavesProvider,
-              private modalCtrl : ModalController) {}
+              private modalCtrl : ModalController) {
+
+    // this.question = new Question();
+  }
 
   ionViewDidLoad(){
     // this.qocData.push(new Data("test","",0,0,['asd','asd','asd','asd','asd','asd']));
@@ -60,7 +65,8 @@ export class QocPage {
         {
           text: 'Add',
           handler: data => {
-            this.qocData.push(new Data(data.option));
+            // this.qocData.push(new Data(data.option));
+            this.question.addOption(data.option);
           }
         }
       ]
@@ -69,13 +75,17 @@ export class QocPage {
   }
 
   /** ADD CRITERIA TO QOC DATA  */
-  addCriteriaBtn(qocData:Data){
+  addCriteriaBtn(){
     let alert = this.messageProvider.alertCtrl.create({
       title: 'Add criteria',
       inputs: [
         {
           name: 'criteria',
           placeholder: 'Criteria'
+        },
+        {
+          name: 'weight',
+          placeholder: 'Weight'
         }
       ],
       buttons: [
@@ -90,7 +100,8 @@ export class QocPage {
           text: 'Add',
           handler: data => {
             if(data.criteria.length > 0){
-              qocData.addCriteria(data.criteria);
+              // qocData.addCriteria(data.criteria);
+              this.question.addCriteria(data.criteria, data.weight);
             }
           }
         }
@@ -150,7 +161,7 @@ export class QocPage {
 
  /******************* SEND QOC DATA ******************/
   async sendQOC(){
-    this.wavesProvider.sendQOC(this.qocData,this.messageProvider);
+    // this.wavesProvider.sendQOC(this.qocData,this.messageProvider);
   }
 
   openCriteriaView(data:Data) {
