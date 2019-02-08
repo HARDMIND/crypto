@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { Data } from '../../app/Data';
+import {Data, Question} from '../../app/Data';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { MessagesProvider } from '../messages/messages';
@@ -197,6 +197,68 @@ export class WavesProvider {
     var st = signTx(tr,seedFrom.keyPair.privateKey);
     console.log(st)
     await this.waves.API.Node.transactions.rawBroadcast(st);
+
+  }
+
+  /**
+   * sendet Question Object
+   * @param {Question} data Object Data (Option & Criteria Arrays)
+   * @param {MessagesProvider} messageProvider Messages
+   * @param {boolean} isFinal
+   * @returns {Promise<void>}
+   */
+  public async  sendQOCData(data : Question, messageProvider:MessagesProvider, isFinal:boolean = false) {
+    //@TODO: Need Data Alert
+    var newList = [];
+    var counterAllData = data.option.length;
+    var counterOption = 0;
+    var counterCriteria = 0;
+    var counterCriteriaWeight = 0;
+
+    data.option.forEach(element => {
+      /** Add option to list  */
+      var option = {
+        "key": Date.now() + "option" + (counterOption +counterAllData),
+        "type":"string",
+        "value":element.name
+      }
+      newList.push(option);
+
+      /* Add criteria to list  */
+      data.criteria.forEach(criteriaElement => {
+        var criteria = {
+          "key": Date.now() + "criteria" + (counterOption +counterAllData) + "&"+counterCriteria,
+          "type":"string",
+          "value":criteriaElement.criteria
+        }
+        newList.push(criteria);
+        counterCriteria+=1;
+      });
+
+      /** Add criteriaweight to list */
+      data.criteria.forEach(criteriaWeightElement => {
+        var criteriaWeight = {
+          "key": Date.now() + "criteriaWeight" + (counterOption +counterAllData)+ "&"+counterCriteriaWeight,
+          "type":"string",
+          "value":criteriaWeightElement.weight
+        }
+        newList.push(criteriaWeight);
+        counterCriteriaWeight+=1;
+      });
+
+      counterOption+=1;
+    });
+
+      console.log("Bis her hin");
+    /* send data */
+    if(this.sendData(newList)){
+      /** return result */
+      messageProvider.alert(true,"Output","QOC Data eingefügt \n");
+      console.log("Sent");
+    }else{
+      messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
+    }
+
 
   }
 

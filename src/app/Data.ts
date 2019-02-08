@@ -25,7 +25,7 @@ export class Data {
 }
 
 export class Question {
-  private criteria : Criteria[] = [];
+  public criteria : Criteria[] = [];
   public option : Option[] = [];
 
   constructor() {
@@ -51,6 +51,7 @@ export class Question {
   public getCriteria(index : number) {
     return this.criteria[index];
   }
+
 }
 
 export class Option {
@@ -73,7 +74,7 @@ export class Option {
 export class Criteria {
 
   public criteria : string;
-  private weight : number;
+  public weight : number;
 
   constructor (criteria : string, weight : number) {
     this.criteria = criteria;

@@ -161,7 +161,9 @@ export class QocPage {
 
  /******************* SEND QOC DATA ******************/
   async sendQOC(){
+    console.log("BTN clicked");
     // this.wavesProvider.sendQOC(this.qocData,this.messageProvider);
+   this.wavesProvider.sendQOCData(this.question, this.messageProvider);
   }
 
   openCriteriaView(data:Data) {
