@@ -139,7 +139,15 @@ export class CreateProcessPage {
       if(res.balance > 5) {
 
         console.log("Genug Waves sind vorhanden.");
-        this.wavesProvider.sendWaves(this.userPhrase);
+        this.wavesProvider.transaction(userSeed, projectSeed.address);
+
+        this.wavesProvider.checkBalanceFromAdress(projectSeed.address).then((res) => {
+          console.log(res);
+        }, (err) => {
+          console.error(err);
+        })
+
+        //this.wavesProvider.sendWaves(this.userPhrase);
 
       } else {
         console.error("Balance =< 5");

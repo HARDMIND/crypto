@@ -273,4 +273,25 @@ export class WavesProvider {
     }
 
   }
+
+
+  public transaction(userSeed, projectAddress) {
+    const { transfer } = require('waves-transactions');
+
+    console.log(userSeed);
+
+    const signedTranserTx = transfer({
+      amount: 1,
+      recipient: projectAddress,
+      senderPublicKey: userSeed.keyPair.publicKey,
+      //Timestamp is optional but it was overrided, in case timestamp is not provided it will fallback to Date.now(). You can set any oftional params yourself. go check full docs
+      timestamp: 1536917842558
+    }, userSeed);
+
+    console.info(signedTranserTx);
+
+    this.waves.API.Node.transactions.broadcast('transfer', signedTranserTx, userSeed.keyPair).then((responseData) => {
+      console.log(responseData);
+    });
+  }
 }
