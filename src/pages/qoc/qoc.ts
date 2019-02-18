@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import {IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
-import {Data, Question} from '../../app/Data';
+import { Data } from '../../app/Data';
 declare var require: any;
 /**
  * Generated class for the QocPage page.
@@ -22,22 +22,16 @@ export class QocPage {
   public inputOption:any;
   public inputCriteria:any;
   public inputCriteriaWeight:any;
-  private question : Question = new Question();
-
-  // public qocData : Data[] = [];
+  public qocData : Data[] = [];
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private messageProvider:MessagesProvider,
-    private wavesProvider:WavesProvider,
-              private modalCtrl : ModalController) {
-
-    // this.question = new Question();
-  }
-
+    private wavesProvider:WavesProvider) {}
+  
   ionViewDidLoad(){
     // this.qocData.push(new Data("test","",0,0,['asd','asd','asd','asd','asd','asd']));
     // this.qocData.push(new Data("test","",0,0,['asd','asd']));
-
+    
     /** Count data from address */
     if(localStorage['projectPhrase'] != null && localStorage['projectPhrase'] != ""){
       this.wavesProvider.getData();
@@ -65,8 +59,7 @@ export class QocPage {
         {
           text: 'Add',
           handler: data => {
-            // this.qocData.push(new Data(data.option));
-            this.question.addOption(data.option);
+            this.qocData.push(new Data(data.option));
           }
         }
       ]
@@ -75,17 +68,13 @@ export class QocPage {
   }
 
   /** ADD CRITERIA TO QOC DATA  */
-  addCriteriaBtn(){
+  addCriteriaBtn(qocData:Data){
     let alert = this.messageProvider.alertCtrl.create({
       title: 'Add criteria',
       inputs: [
         {
           name: 'criteria',
           placeholder: 'Criteria'
-        },
-        {
-          name: 'weight',
-          placeholder: 'Weight'
         }
       ],
       buttons: [
@@ -100,8 +89,7 @@ export class QocPage {
           text: 'Add',
           handler: data => {
             if(data.criteria.length > 0){
-              // qocData.addCriteria(data.criteria);
-              this.question.addCriteria(data.criteria, data.weight);
+              qocData.addCriteria(data.criteria);
             }
           }
         }
@@ -118,7 +106,7 @@ export class QocPage {
 
   //   /** Error if phrase is null */
   //   if(this.messageProvider.alert(localStorage['projectPhrase'] == "", "Error","Phrase cant be null"))return;
-
+    
   //   var counter =  this.wavesProvider.count + (this.qocList.length/3);
 
   //   /** get content from input  */
@@ -161,26 +149,7 @@ export class QocPage {
 
  /******************* SEND QOC DATA ******************/
   async sendQOC(){
-    console.log("BTN clicked");
-    // this.wavesProvider.sendQOC(this.qocData,this.messageProvider);
-   this.wavesProvider.sendQOCData(this.question, this.messageProvider);
+    this.wavesProvider.sendQOC(this.qocData,this.messageProvider);
   }
 
-  openCriteriaView(data:Data) {
-    this.modalCtrl.create(QocAddCriteriaPage, {
-      qocData : data
-    }).present();
-  }
-
-}
-
-
-@Component({
-  selector: 'qocaddcriteria',
-  templateUrl: 'addCriteria.html',
-})
-export class QocAddCriteriaPage {
-  constructor() {
-
-  }
 }
