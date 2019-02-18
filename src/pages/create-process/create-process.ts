@@ -18,6 +18,7 @@ import { WavesProvider } from '../../providers/waves/waves';
 export class CreateProcessPage {
 
   public projectPhrase:any;
+  public userPhrase:any;
   public projectQuestion:any;
   public list = [];
   public orderForm:any;
@@ -31,35 +32,43 @@ export class CreateProcessPage {
     private messageProvider:MessagesProvider,
     private wavesProvider:WavesProvider,
     private alertCtrl : AlertController) {
+
+
   }
 
   /******************** Add script to waves acc  *******************/
   async addScriptToAcc(){
-    if(this.messageProvider.alert(this.list == [] || this.list.length == 0,"Error","No public key"))return;
-    if(this.messageProvider.alert(this.projectQuestion == "" || this.projectPhrase == "","Error","Project phrase or project question"))return;
+  //  if(this.messageProvider.alert(this.list == [] || this.list.length == 0,"Error","No public key"))return;
+  //  if(this.messageProvider.alert(this.projectQuestion == "" || this.projectPhrase == "","Error","Project phrase or project question"))return;
+
+
+    console.log(this.userPhrase);
 
     /** generate new acc */
-    //var seedBank = this.wavesProvider.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
-    //var seedProject = this.wavesProvider.createSeed();
-    //var response = this.wavesProvider.sendWaves(seedBank,100000, seedProject.address);
+//    var seedBank = this.wavesProvider.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
+  //  var seedProject = this.wavesProvider.createSeed();
+   // var response = this.wavesProvider.sendWaves(this.userPhrase).then((response) => {
 
-   // if(response){
     console.log("is true")
     var questionJ = {
       "key":"question",
       "type":"string",
       "value":this.projectQuestion
     }
-    
+
     /** send question to blockchain */
-    await this.wavesProvider.sendData(questionJ,this.projectPhrase,this.projectPhrase);
+    await this.wavesProvider.sendData(questionJ,this.projectPhrase,this.projectPhrase).then((resp) => {
+      console.log(resp);
+    }, (error) => {
+      console.error(error);
+    });
 
     /** create script  */
-    this.wavesProvider.createScript(this.list, this.projectPhrase);
+    //this.wavesProvider.createScript(this.list, this.projectPhrase);
 
     /** result message  */
-    this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
-  //  }
+    //this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
+
   }
 
   addPublicKeyAlert() {
@@ -112,4 +121,34 @@ export class CreateProcessPage {
     this.items.splice(i,1);
   }
 
+  public createProject() {
+    console.log("Project erstellen...");
+
+    /** Create Project from Phrase */
+    const projectSeed = this.wavesProvider.createSeedFromPhrase(this.projectPhrase);
+    console.log(projectSeed);
+
+    /** Create User from Phrase */
+    const userSeed = this.wavesProvider.createSeedFromPhrase(this.userPhrase);
+    console.log(userSeed);
+    console.log(userSeed.address);
+    this.wavesProvider.checkBalanceFromAdress(userSeed.address).then((res) => {
+      console.log(res);
+
+      /** Check if balance < 5 */
+      if(res.balance > 5) {
+
+        console.log("Genug Waves sind vorhanden.");
+        this.wavesProvider.sendWaves(this.userPhrase);
+
+      } else {
+        console.error("Balance =< 5");
+        return;
+      }
+
+    }, (err) => {
+      console.log(err);
+    })
+
+  }
 }

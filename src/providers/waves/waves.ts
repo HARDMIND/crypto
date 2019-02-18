@@ -1,9 +1,11 @@
 
 import { Injectable } from '@angular/core';
-import {Data, Question} from '../../app/Data';
+import { Data } from '../../app/Data';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { MessagesProvider } from '../messages/messages';
+import {NavController} from "ionic-angular";
+import {LoginPage} from "../../pages/login/login";
 declare var require: any;
 
 /*
@@ -22,10 +24,17 @@ export class WavesProvider {
   finalData: Data = new Data("");
   isFinal:boolean = false;
 
-  constructor(public httpClient: HttpClient) {
+  constructor(
+    public httpClient: HttpClient
+  ) {
     this.wavesApi =  require('@waves/waves-api');
     this.waves = this.wavesApi.create(this.wavesApi.TESTNET_CONFIG);
-    this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
+
+    if(localStorage['projectPhrase'] != null) {
+      this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
+    } else {
+      console.log("ProjectPhrase fehlt!");
+    }
   }
 
   /** get all data from adress */
@@ -33,12 +42,12 @@ export class WavesProvider {
     this.QOCData = [];
     this.dataList = [];
     var getDataList:Observable<any> = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+this.projectSeed.address);
-    
+
     getDataList.subscribe(allData => {
 
       /** Check if final data is available */
       var finalData:any = allData.find(element => element.key.indexOf('final') >= 0);
-      
+
 
       if(finalData != undefined ){
         console.log(finalData);
@@ -48,28 +57,28 @@ export class WavesProvider {
         console.log("after");
         /** Search for all options */
         var allOptions = allData.filter(element => element.key.indexOf('option') >= 0);
-  
+
         /** go through all options and search for criteria and criteriaweight */
         allOptions.forEach(element => {
           var stringIndex = element.key.indexOf('option');
           /** Get option counter to get criteria and criteriaweight */
           var elementOptionCounter = element.key.substring(stringIndex+6);
-  
+
           var qocData : Data = new Data(element.value);
-          
+
           /** Find all criteria */
           var criterialist = allData.filter(data => data.key.indexOf('criteria'+elementOptionCounter) >= 0);
           criterialist.forEach(element => {
             qocData.criteriaList.push(element.value);
           });
-  
+
           /** Find all criteriaweight */
           var criteriaWeightlist = allData.filter(data => data.key.indexOf('criteriaWeight'+elementOptionCounter) >= 0);
           criteriaWeightlist.forEach(element => {
             qocData.criteriaWeightList.push(element.value);
             qocData.edgeWeightList.push(0);
           });
-  
+
           /** Push data to array */
           this.QOCData.push(qocData);
         });
@@ -80,42 +89,60 @@ export class WavesProvider {
 
   /** Send data to nodes  */
   public async sendData(data:any,projectPhrase = localStorage['projectPhrase'],userPhrase = localStorage['userPhrase']){
-      // /** create process seed from phrase */
-      const seedProcess =this.createSeedFromPhrase(projectPhrase) ;
-  
-      /** create sender seed from phrase */
-      const seedSender = this.createSeedFromPhrase(userPhrase) ;
+    // /** create process seed from phrase */
+    const seedProcess =this.createSeedFromPhrase(projectPhrase) ;
 
-      /** create qoc data object */
-      let dataObj ={
-        data: data,
-        senderPublicKey: seedProcess.keyPair.publicKey,
-        sender: seedProcess.address,
-        fee:1000000
-      };
+    /** create sender seed from phrase */
+    const seedSender = this.createSeedFromPhrase(userPhrase) ;
 
-      /** prepare QOC data transaction object*/
-      const dataTx = await this.waves.tools.createTransaction("data", dataObj);
-      
-      /** add proof to QOC data transaction  */
-      dataTx.addProof(seedSender.keyPair.privateKey);
+    /** transfer waves from useracc to project acc
 
-      /** create json from  dataTx object */
-      const txJSON = await dataTx.getJSON();
+    /** create qoc data object */
+    let dataObj ={
+      data: data,
+      senderPublicKey: seedProcess.keyPair.publicKey,
+      sender: seedProcess.address,
+      fee:1000000
+    };
 
-      /** send data  */
-      return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
+    /** prepare QOC data transaction object*/
+    const dataTx = await this.waves.tools.createTransaction("data", dataObj);
+
+    /** add proof to QOC data transaction  */
+    dataTx.addProof(seedSender.keyPair.privateKey);
+
+    /** create json from  dataTx object */
+    const txJSON = await dataTx.getJSON();
+
+    /** send data  */
+    return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
   }
 
   /** Create account from phrase */
   public createSeedFromPhrase(phrase){
-    return this.waves.Seed.fromExistingPhrase(phrase) ;
+    return this.waves.Seed.fromExistingPhrase(phrase);
   }
-  
+
+  public checkBalanceFromAdress(address) : Promise<any> {
+    var _this = this;
+    let promise = new Promise(function(resolve, reject) {
+
+      _this.waves.API.Node.addresses.balance(address).then((res) => {
+        resolve(res);
+      }, (err) => {
+        reject (err);
+      })
+    });
+
+    return promise;
+  }
+
   /** create new account */
   public createSeed(){
     return this.waves.Seed.create();
   }
+
+
 
   /** create script */
   public async createScript(list,phrase){
@@ -123,21 +150,21 @@ export class WavesProvider {
     // json to string sample: JSON.stringify(txJSON)
     /** create seed from phrase */
     const seed = this.createSeedFromPhrase(phrase) ;
-    
+
     /** prepare Script */
-    let scriptBodyNew = 
-    `match tx {
+    let scriptBodyNew =
+      `match tx {
       case tx:DataTransaction =>{`;
 
     for(let i=0; i<list.length;i++){
-        scriptBodyNew+= `let l${i} = if(sigVerify(tx.bodyBytes, tx.proofs[0], base58'${list[i]}')) then 1 else 0 ;`;
+      scriptBodyNew+= `let l${i} = if(sigVerify(tx.bodyBytes, tx.proofs[0], base58'${list[i]}')) then 1 else 0 ;`;
     }
 
     scriptBodyNew += `(`;
 
     for(let i=0; i<list.length;i++){
-        scriptBodyNew += (i == list.length-1 && i == list.length-1) ? ` l${i}`:` l${i} +` ;
-      
+      scriptBodyNew += (i == list.length-1 && i == list.length-1) ? ` l${i}`:` l${i} +` ;
+
     }
 
     scriptBodyNew += `) == 1 }case _ =>  throw("State should be a data transaction")}`;
@@ -166,89 +193,29 @@ export class WavesProvider {
     return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
   }
 
-  public async sendWaves(){
-    const { transfer, signTx } = require('waves-transactions')
-    var seedFrom = this.createSeedFromPhrase("aim ankle exclude scene jeans stone awful lawn tornado cake raise cry light finger service");
+  public async sendWaves(userPhrase : string){
+    const { transfer, signTx } = require('waves-transactions');
+    var seedFrom = this.createSeedFromPhrase(userPhrase);
     const seedTo = this.createSeed();
 
-    var tr = transfer({ 
+    var tr = transfer({
       amount: 5,
       recipient: seedTo.address,
       senderPublicKey:seedFrom.keyPair.publicKey,
       sender: seedFrom.address,
       //attachment?: 'string',
-    // feeAssetId: 'WAVES',
+      // feeAssetId: 'WAVES',
       //assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS', //WBTC
       //fee?: 100000,
       //timestamp?: Date.now(),
     })
     var st = signTx(tr,seedFrom.keyPair.privateKey);
-    console.log(st)
-    await this.waves.API.Node.transactions.rawBroadcast(st);
-    
-  }
-
-  /**
-   * sendet Question Object
-   * @param {Question} data Object Data (Option & Criteria Arrays)
-   * @param {MessagesProvider} messageProvider Messages
-   * @param {boolean} isFinal
-   * @returns {Promise<void>}
-   */
-  public async  sendQOCData(data : Question, messageProvider:MessagesProvider, isFinal:boolean = false) {
-    //@TODO: Need Data Alert
-    var newList = [];
-    var counterAllData = data.option.length;
-    var counterOption = 0;
-    var counterCriteria = 0;
-    var counterCriteriaWeight = 0;
-
-    data.option.forEach(element => {
-      /** Add option to list  */
-      var option = {
-        "key": Date.now() + "option" + (counterOption +counterAllData),
-        "type":"string",
-        "value":element.name
-      }
-      newList.push(option);
-
-      /* Add criteria to list  */
-      data.criteria.forEach(criteriaElement => {
-        var criteria = {
-          "key": Date.now() + "criteria" + (counterOption +counterAllData) + "&"+counterCriteria,
-          "type":"string",
-          "value":criteriaElement.criteria
-        }
-        newList.push(criteria);
-        counterCriteria+=1;
-      });
-
-      /** Add criteriaweight to list */
-      data.criteria.forEach(criteriaWeightElement => {
-        var criteriaWeight = {
-          "key": Date.now() + "criteriaWeight" + (counterOption +counterAllData)+ "&"+counterCriteriaWeight,
-          "type":"string",
-          "value":criteriaWeightElement.weight
-        }
-        newList.push(criteriaWeight);
-        counterCriteriaWeight+=1;
-      });
-
-      counterOption+=1;
-    });
-
-      console.log("Bis her hin");
-    /* send data */
-    if(this.sendData(newList)){
-      /** return result */
-      messageProvider.alert(true,"Output","QOC Data eingefügt \n");
-      console.log("Sent");
-    }else{
-      messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
-    }
-
+    console.log(st);
+    return await this.waves.API.Node.transactions.rawBroadcast(st);
 
   }
+
+
 
   /******************** Send QOC Data  *******************/
   public async sendQOC(qocDataToSend:Data[], messageProvider:MessagesProvider, isFinal:boolean = false){
@@ -263,7 +230,7 @@ export class WavesProvider {
     var counterCriteriaWeight = 0;
 
     qocDataToSend.forEach(element => {
-      
+
       /** Add option to list  */
       var option = {
         "key": Date.now() + "option" + (counterOption +counterAllData),
@@ -304,6 +271,6 @@ export class WavesProvider {
     }else{
       messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
     }
-    
+
   }
 }

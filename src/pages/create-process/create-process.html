@@ -14,6 +14,10 @@
       <ion-input [(ngModel)]="projectPhrase"></ion-input>
     </ion-item>
     <ion-item>
+      <ion-label color="primary" floating>User Phrase</ion-label>
+      <ion-input [(ngModel)]="userPhrase"></ion-input>
+    </ion-item>
+    <ion-item>
         <ion-label color="primary" floating>Project Question</ion-label>
         <ion-input [(ngModel)]="projectQuestion"></ion-input>
     </ion-item>
@@ -29,7 +33,7 @@
     </ion-item>
 
     <ion-item text-center align-items-center>
-      <button ion-button full (click)="addScriptToAcc()">Create Project</button>
+      <button ion-button full (click)="createProject()">Create Project</button>
     </ion-item>
   </ion-list>
 </ion-content>
