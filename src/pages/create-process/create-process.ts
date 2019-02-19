@@ -145,6 +145,33 @@ export class CreateProcessPage {
           console.log("Success!");
           console.log(success);
 
+          this.wavesProvider.waitForConfirmation(success.id).then((succes) => {
+            console.log("Transaktion confirmed. Weitere logik hier.");
+
+            var questionJ = {
+              "key":"question",
+              "type":"string",
+              "value":this.projectQuestion
+            };
+
+            /** send question to blockchain */
+            this.wavesProvider.sendData(questionJ,this.projectPhrase,this.projectPhrase).then((resp) => {
+              console.log(resp);
+            }, (error) => {
+              console.error(error);
+              console.log("Keine waves vorhanden?");
+            });
+
+            /** create script  */
+            this.wavesProvider.createScript(this.list, this.projectPhrase).then((suc) => {
+              console.log("Skript hochgeladen");
+            }, (error) => {
+
+            })
+
+            /** result message  */
+            this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
+          })
 
           this.wavesProvider.checkBalanceFromAdress(projectSeed.address).then((res) => {
             console.log(res);

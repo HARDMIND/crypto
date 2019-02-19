@@ -200,7 +200,7 @@ export class WavesProvider {
 
     //Transfering 1 WAVES
     const params = {
-      amount: 500000000,
+      amount: 100000000,
       recipient: projectAddress,
       //feeAssetId: undefined
       //assetId: undefined
@@ -308,6 +308,34 @@ export class WavesProvider {
     this.waves.API.Node.transactions.broadcast('transfer', transferData, seed.keyPair).then((responseData) => {
       console.log(responseData);
     });
+
+  }
+
+  async delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+
+  public async waitForConfirmation(id : string) : Promise<any> {
+    let _this = this;
+
+    let promise = new Promise(function (resolve, reject) {
+      let tx = null;
+
+      do {
+        _this.waves.API.Node.transactions.utxGet(id).then((utx) => {
+          console.log(utx);
+          tx = utx;
+          setTimeout(function() {}, 5000);
+        }, (error) => {
+          console.error(error);
+          tx = null;
+        });
+      } while (tx != null);
+      console.info("Schleife beendet!");
+      resolve();
+    });
+
+    return promise;
 
   }
 }
