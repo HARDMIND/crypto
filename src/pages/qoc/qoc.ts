@@ -33,9 +33,8 @@ export class QocPage {
     // this.qocData.push(new Data("test","",0,0,['asd','asd']));
     
     /** Count data from address */
-    if(localStorage['projectPhrase'] != null && localStorage['projectPhrase'] != ""){
-      this.wavesProvider.getData();
-    }
+    this.wavesProvider.getData();
+    
   }
 
   /** CREATE NEW QOC DATA WITH OPTION NAME */

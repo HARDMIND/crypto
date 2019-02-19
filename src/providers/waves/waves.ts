@@ -31,7 +31,7 @@ export class WavesProvider {
     this.waves = this.wavesApi.create(this.wavesApi.TESTNET_CONFIG);
 
     if(localStorage['projectPhrase'] != undefined && localStorage['projectPhrase'] != "" && localStorage['projectPhrase'] != null) {
-      //this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
+      this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
     } else {
       console.log("ProjectPhrase fehlt!");
     }
@@ -141,8 +141,6 @@ export class WavesProvider {
   public createSeed(){
     return this.waves.Seed.create();
   }
-
-
 
   /** create script */
   public async createScript(list,phrase){
