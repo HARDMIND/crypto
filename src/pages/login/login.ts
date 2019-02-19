@@ -32,11 +32,22 @@ export class LoginPage {
   }
 
   login(){
-    if(this.messagesProvider.alert(this.userPhrase == "" || this.userPhrase == null || this.projectPhrase == null || this.projectPhrase == "","Error", "Phrase is missing"))return;
+    if(this.messagesProvider.alert(((this.userPhrase == "" || this.userPhrase == undefined) 
+                                    && (this.projectPhrase == undefined || this.projectPhrase == "")) 
+                                    || (this.userPhrase == "" || this.userPhrase == undefined) ,"Error", "Phrase is missing"))return;
+    
     localStorage['userPhrase'] = this.userPhrase;
     localStorage['projectPhrase'] = this.projectPhrase;
-    //this.messagesProvider.alert(true, "Result",localStorage['userSeed'] + " " + localStorage['projectSeed']) ;
-    this.navCtrl.push(HomePage);
+
+    
+    if((this.projectPhrase == "" || this.projectPhrase == undefined) 
+        && (this.userPhrase != "" && this.userPhrase != undefined)){
+          /** Create project  */
+          this.navCtrl.push(CreateProcessPage);
+    }else{
+          /** Menu page  */
+          this.navCtrl.push(HomePage);
+    }
 
   }
 

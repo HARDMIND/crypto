@@ -30,8 +30,8 @@ export class WavesProvider {
     this.wavesApi =  require('@waves/waves-api');
     this.waves = this.wavesApi.create(this.wavesApi.TESTNET_CONFIG);
 
-    if(localStorage['projectPhrase'] != null) {
-      this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
+    if(localStorage['projectPhrase'] != undefined && localStorage['projectPhrase'] != "" && localStorage['projectPhrase'] != null) {
+      //this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
     } else {
       console.log("ProjectPhrase fehlt!");
     }
@@ -99,7 +99,7 @@ export class WavesProvider {
 
     /** create qoc data object */
     let dataObj ={
-      data: data,
+      data: [data],
       senderPublicKey: seedProcess.keyPair.publicKey,
       sender: seedProcess.address,
       fee:1000000
@@ -211,7 +211,7 @@ export class WavesProvider {
     }
 
     const signedTransferTx = transfer(params, userPhrase);
-    console.log(signedTransferTx);
+    //console.log(signedTransferTx);
 
     return await this.waves.API.Node.transactions.rawBroadcast(signedTransferTx);
   }
@@ -337,5 +337,24 @@ export class WavesProvider {
 
     return promise;
 
+  }
+
+  public async waitForEnoughWaves(address)  : Promise<boolean> {
+    var isEnough = false;
+    var timeout = 30;
+    while(!isEnough &&timeout >0 ){
+      await this.checkBalanceFromAdress(address).then( async result => {
+        console.log(result);
+        if(result.balance > 0){
+          isEnough = true;
+        }else{
+          console.log("wait .......... timeout in: " + timeout);
+          await this.delay(1000);
+          timeout -= 1;
+        }
+      });
+    }
+
+    return isEnough;
   }
 }

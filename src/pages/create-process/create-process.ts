@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {AlertController, IonicPage, NavController, NavParams, LoadingController} from 'ionic-angular';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
 
@@ -31,7 +31,8 @@ export class CreateProcessPage {
     public navParams: NavParams,
     private messageProvider:MessagesProvider,
     private wavesProvider:WavesProvider,
-    private alertCtrl : AlertController) {
+    private alertCtrl : AlertController,
+    public loadingController: LoadingController) {
 
 
   }
@@ -121,32 +122,46 @@ export class CreateProcessPage {
     this.items.splice(i,1);
   }
 
-  public createProject() {
+  public async createProject() {
+    const loadingElement = await this.loadingController.create({
+      spinner: 'dots',
+      duration: 30000
+    });
+
+    await loadingElement.present();
     console.log("Project erstellen...");
 
     /** Create Project from Phrase */
-    const projectSeed = this.wavesProvider.createSeedFromPhrase(this.projectPhrase);
+    const projectSeed = this.wavesProvider.createSeed();
+    this.projectPhrase = projectSeed.phrase;
     console.log(projectSeed);
 
     /** Create User from Phrase */
-    const userSeed = this.wavesProvider.createSeedFromPhrase(this.userPhrase);
+    const userSeed = this.wavesProvider.createSeedFromPhrase(localStorage['userPhrase']);
+    
     console.log(userSeed);
-    console.log(userSeed.address);
     this.wavesProvider.checkBalanceFromAdress(userSeed.address).then((res) => {
-      console.log(res);
+      //console.log(res);
 
       /** Check if balance < 5 */
       if(res.balance > 5) {
 
         console.log("Genug Waves sind vorhanden.");
-        console.log("Project Addresse: " + projectSeed.address);
+        //console.log("Project Addresse: " + projectSeed.address);
 
         this.wavesProvider.sendWaves(userSeed.phrase, projectSeed.address).then((success) => {
           console.log("Success!");
-          console.log(success);
+          //console.log(success);
 
-          this.wavesProvider.waitForConfirmation(success.id).then((succes) => {
+          this.wavesProvider.waitForEnoughWaves(projectSeed.address).then((successConfirm) => {
+            loadingElement.dismiss();
+            if(!successConfirm){
+              this.messageProvider.alert(true,'Timeout!', "Prozess nicht erstellt",'create-process');
+              return;
+            }
+
             console.log("Transaktion confirmed. Weitere logik hier.");
+            console.log(successConfirm);
 
             var questionJ = {
               "key":"question",
@@ -170,23 +185,16 @@ export class CreateProcessPage {
             })
 
             /** result message  */
-            this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
+            var message = '<p>Phrase: ' + projectSeed.phrase + "</p>"+
+            "<p>Address: " + projectSeed.address +  "</p>"+
+            '<p>PublicKey: ' + projectSeed.keyPair.publicKey +"</p>"+
+            "<p>PrivateKey: " + projectSeed.keyPair.privateKey +"</p>";
+            this.messageProvider.alert(true,'Prozess erstellt!', message,'create-process');
           })
-
-          this.wavesProvider.checkBalanceFromAdress(projectSeed.address).then((res) => {
-            console.log(res);
-          }, (err) => {
-            console.error(err);
-          });
         }, (error) => {
           console.error(error);
         })
-
-
-
-
       } else {
-        console.error("Balance =< 5");
         return;
       }
 
@@ -195,4 +203,6 @@ export class CreateProcessPage {
     })
 
   }
+
+
 }
