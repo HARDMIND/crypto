@@ -193,26 +193,27 @@ export class WavesProvider {
     return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
   }
 
-  public async sendWaves(userPhrase : string){
-    const { transfer, signTx } = require('waves-transactions');
-    var seedFrom = this.createSeedFromPhrase(userPhrase);
-    const seedTo = this.createSeed();
+  public async sendWaves(userPhrase : string, projectAddress : string){
+    const { transfer, signTx } = require('@waves/waves-transactions');
 
-    var tr = transfer({
-      amount: 5,
-      recipient: seedTo.address,
-      senderPublicKey:seedFrom.keyPair.publicKey,
-      sender: seedFrom.address,
-      //attachment?: 'string',
-      // feeAssetId: 'WAVES',
-      //assetId: '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS', //WBTC
-      //fee?: 100000,
-      //timestamp?: Date.now(),
-    })
-    var st = signTx(tr,seedFrom.keyPair.privateKey);
-    console.log(st);
-    return await this.waves.API.Node.transactions.rawBroadcast(st);
+    const seed = userPhrase;
 
+    //Transfering 1 WAVES
+    const params = {
+      amount: 500000000,
+      recipient: projectAddress,
+      //feeAssetId: undefined
+      //assetId: undefined
+      //attachment: undefined
+      //senderPublicKey: 'by default derived from seed',
+      //timestamp: Date.now(),
+      //fee: 100000,
+    }
+
+    const signedTransferTx = transfer(params, userPhrase);
+    console.log(signedTransferTx);
+
+    return await this.waves.API.Node.transactions.rawBroadcast(signedTransferTx);
   }
 
 
@@ -276,22 +277,37 @@ export class WavesProvider {
 
 
   public transaction(userSeed, projectAddress) {
-    const { transfer } = require('waves-transactions');
+    const { transfer, signTx } = require("waves-transactions")
 
     console.log(userSeed);
 
-    const signedTranserTx = transfer({
-      amount: 1,
+    const seed = this.waves.Seed.fromExistingPhrase(userSeed.phrase);
+
+    const transferData = {
+
+      // An arbitrary address; mine, in this example
       recipient: projectAddress,
-      senderPublicKey: userSeed.keyPair.publicKey,
-      //Timestamp is optional but it was overrided, in case timestamp is not provided it will fallback to Date.now(). You can set any oftional params yourself. go check full docs
-      timestamp: 1536917842558
-    }, userSeed);
 
-    console.info(signedTranserTx);
+      // ID of a token, or WAVES
+      assetId: 'WAVES',
 
-    this.waves.API.Node.transactions.broadcast('transfer', signedTranserTx, userSeed.keyPair).then((responseData) => {
+      // The real amount is the given number divided by 10^(precision of the token)
+      amount: 10000000,
+
+      // The same rules for these two fields
+      feeAssetId: 'WAVES',
+      fee: 100000,
+
+      // 140 bytes of data (it's allowed to use Uint8Array here)
+      attachment: '',
+
+      timestamp: Date.now()
+
+    };
+
+    this.waves.API.Node.transactions.broadcast('transfer', transferData, seed.keyPair).then((responseData) => {
       console.log(responseData);
     });
+
   }
 }

@@ -55,6 +55,6 @@ export class LoginPage {
   }
 
   testSend(){
-    this.wavesProvider.sendWaves();
+    //this.wavesProvider.sendWaves();
   }
 }

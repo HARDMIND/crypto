@@ -64,10 +64,10 @@ export class CreateProcessPage {
     });
 
     /** create script  */
-    //this.wavesProvider.createScript(this.list, this.projectPhrase);
+    this.wavesProvider.createScript(this.list, this.projectPhrase);
 
     /** result message  */
-    //this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
+    this.messageProvider.alert(true,'Prozess erstellt!', "Prozess erstellt",'create-process');
 
   }
 
@@ -139,15 +139,24 @@ export class CreateProcessPage {
       if(res.balance > 5) {
 
         console.log("Genug Waves sind vorhanden.");
-        this.wavesProvider.transaction(userSeed, projectSeed.address);
+        console.log("Project Addresse: " + projectSeed.address);
 
-        this.wavesProvider.checkBalanceFromAdress(projectSeed.address).then((res) => {
-          console.log(res);
-        }, (err) => {
-          console.error(err);
+        this.wavesProvider.sendWaves(userSeed.phrase, projectSeed.address).then((success) => {
+          console.log("Success!");
+          console.log(success);
+
+
+          this.wavesProvider.checkBalanceFromAdress(projectSeed.address).then((res) => {
+            console.log(res);
+          }, (err) => {
+            console.error(err);
+          });
+        }, (error) => {
+          console.error(error);
         })
 
-        //this.wavesProvider.sendWaves(this.userPhrase);
+
+
 
       } else {
         console.error("Balance =< 5");
