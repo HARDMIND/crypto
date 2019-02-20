@@ -3,42 +3,58 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Create QOC</ion-title>
+    <ion-title>Optionen</ion-title>
   </ion-navbar>
 </ion-header>
 
 
 <ion-content padding>
 
-    <ion-grid>
-        <button item-end ion-button clear (click)="addOptionBtn()">
-            <ion-icon color="primary" name="add-circle"></ion-icon>Add option
-        </button>
-        <ion-row>
-            <ion-col class="option" *ngFor="let qoc of qocData; let i = index; ">
-                <p class="borderBottom"> Option {{i}}</p> 
-                <ion-row>
-                    <ion-col>
-                        <br> {{qoc.option}}
-                        <button item-end ion-button clear (click)="addCriteriaBtn(qoc)">
-                            <ion-icon color="primary" name="add-circle"></ion-icon>Add criteria
-                        </button>
-                    </ion-col>
-                </ion-row>
-                <p class="borderBottom"> Criteria {{i}}</p> 
-                <ion-row class="criteria">
-                    <ion-col class="criteria" *ngFor="let listData of qoc.criteriaList; let j = index; ">
-                        <br> {{listData}}
-                        <ion-item>
-                            <ion-input [(ngModel)]="qoc.criteriaWeightList[j]" type="number" placeholder="Weight" floating ></ion-input>
-                        </ion-item>
-                    </ion-col>
-                </ion-row>
-            </ion-col>
-        </ion-row>
-        <button ion-button round (click)="sendQOC()">Send</button>
-    </ion-grid>
-    
+<ion-list>
+  <ion-list-header>Optionen</ion-list-header>
+  <ion-item *ngFor="let qoc of qocData; let i = index">
+    {{qoc.option}}
+  </ion-item>
+
+</ion-list>
+  <button ion-button full round (click)="addOptionBtn()">
+    <ion-icon name="add-circle"></ion-icon> Add option
+  </button>
+
+  <button ion-button round (click)="sendQOC()">Send</button>
+
+
+
+
+    <!--<ion-grid>-->
+        <!--<button item-end ion-button clear (click)="addOptionBtn()">-->
+            <!--<ion-icon color="primary" name="add-circle"></ion-icon>Add option-->
+        <!--</button>-->
+        <!--<ion-row>-->
+            <!--<ion-col class="option" *ngFor="let qoc of qocData; let i = index; ">-->
+                <!--<p class="borderBottom"> Option {{i}}</p> -->
+                <!--<ion-row>-->
+                    <!--<ion-col>-->
+                        <!--<br> {{qoc.option}}-->
+                        <!--<button item-end ion-button clear (click)="addCriteriaBtn(qoc)">-->
+                            <!--<ion-icon color="primary" name="add-circle"></ion-icon>Add criteria-->
+                        <!--</button>-->
+                    <!--</ion-col>-->
+                <!--</ion-row>-->
+                <!--<p class="borderBottom"> Criteria {{i}}</p> -->
+                <!--<ion-row class="criteria">-->
+                    <!--<ion-col class="criteria" *ngFor="let listData of qoc.criteriaList; let j = index; ">-->
+                        <!--<br> {{listData}}-->
+                        <!--<ion-item>-->
+                            <!--<ion-input [(ngModel)]="qoc.criteriaWeightList[j]" type="number" placeholder="Weight" floating ></ion-input>-->
+                        <!--</ion-item>-->
+                    <!--</ion-col>-->
+                <!--</ion-row>-->
+            <!--</ion-col>-->
+        <!--</ion-row>-->
+        <!--<button ion-button round (click)="sendQOC()">Send</button>-->
+    <!--</ion-grid>-->
+    <!---->
 
 <!-- 
     <ion-grid>

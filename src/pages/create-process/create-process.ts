@@ -136,6 +136,7 @@ export class CreateProcessPage {
     this.projectPhrase = projectSeed.phrase;
     console.log(projectSeed);
 
+
     /** Create User from Phrase */
     const userSeed = this.wavesProvider.createSeedFromPhrase(localStorage['userPhrase']);
     
