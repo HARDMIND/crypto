@@ -7,6 +7,7 @@ import { EvaluatePage } from '../evaluate/evaluate';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
 import { LoginPage} from '../login/login';
+import {AddCriteriaPage} from "../add-criteria/add-criteria";
 
 @Component({
   selector: 'page-home',
@@ -44,6 +45,10 @@ export class HomePage {
   /******************** open delete script page  *******************/
   openDeleteProcess(){
     this.navCtrl.push(DeleteProcessPage);
+  }
+
+  openAddCriteria() {
+    this.navCtrl.push(AddCriteriaPage);
   }
   
   /******************** open evaluate page  *******************/

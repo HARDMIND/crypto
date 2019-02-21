@@ -15,6 +15,9 @@ import { WavesProvider } from '../providers/waves/waves';
 import { LoginPage } from '../pages/login/login';
 import { HttpClientModule } from '@angular/common/http';
 import { EvaluationProvider } from '../providers/evaluation/evaluation';
+import IonicStepperModule from "ionic-stepper";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {AddCriteriaPage} from "../pages/add-criteria/add-criteria";
 
 @NgModule({
   declarations: [
@@ -24,11 +27,14 @@ import { EvaluationProvider } from '../providers/evaluation/evaluation';
     CreateProcessPage,
     DeleteProcessPage,
     EvaluatePage,
-    LoginPage
+    LoginPage,
+    AddCriteriaPage
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
+    IonicStepperModule,
+    BrowserAnimationsModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -39,7 +45,8 @@ import { EvaluationProvider } from '../providers/evaluation/evaluation';
     CreateProcessPage,
     DeleteProcessPage,
     EvaluatePage,
-    LoginPage
+    LoginPage,
+    AddCriteriaPage
   ],
   providers: [
     StatusBar,

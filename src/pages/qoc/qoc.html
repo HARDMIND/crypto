@@ -12,8 +12,8 @@
 
 <ion-list>
   <ion-list-header>Optionen</ion-list-header>
-  <ion-item *ngFor="let qoc of qocData; let i = index">
-    {{qoc.option}}
+  <ion-item *ngFor="let option of data.options; let i = index">
+    {{option.name}}
   </ion-item>
 
 </ion-list>
@@ -21,7 +21,6 @@
     <ion-icon name="add-circle"></ion-icon> Add option
   </button>
 
-  <button ion-button round (click)="sendQOC()">Send</button>
 
 
 
@@ -91,4 +90,12 @@
             </ion-row>
         </ion-col>
     </ion-grid> -->
+
+
+
 </ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <button ion-button full round (click)="sendQOC()">Send</button>
+  </ion-toolbar>
+</ion-footer>

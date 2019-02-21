@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
-import { Data } from '../../app/Data';
+import {Data, QOCData} from '../../app/Data';
 declare var require: any;
 /**
  * Generated class for the QocPage page.
@@ -23,18 +23,27 @@ export class QocPage {
   public inputCriteria:any;
   public inputCriteriaWeight:any;
   public qocData : Data[] = [];
+  public data : QOCData;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private messageProvider:MessagesProvider,
-    private wavesProvider:WavesProvider) {}
+    private wavesProvider:WavesProvider) {
+
+    this.data = new QOCData();
+
+  }
   
   ionViewDidLoad(){
     // this.qocData.push(new Data("test","",0,0,['asd','asd','asd','asd','asd','asd']));
     // this.qocData.push(new Data("test","",0,0,['asd','asd']));
-    
+
+
     /** Count data from address */
     this.wavesProvider.getData();
-    
+
+    /**
+     * @TODO: Wenn noch Zeit über ist können wir die bisherigen DOptionen aus der Blockchain ziehen und bereits anzeigen lassen
+     */
   }
 
   /** CREATE NEW QOC DATA WITH OPTION NAME */
@@ -59,6 +68,7 @@ export class QocPage {
           text: 'Add',
           handler: data => {
             this.qocData.push(new Data(data.option));
+            this.data.addOption(data.option);
           }
         }
       ]
@@ -148,7 +158,12 @@ export class QocPage {
 
  /******************* SEND QOC DATA ******************/
   async sendQOC(){
-    this.wavesProvider.sendQOC(this.qocData,this.messageProvider);
+    this.wavesProvider.sendOptions(this.data.options,this.messageProvider).then((success) => {
+      console.log(success);
+
+    }, (error) => {
+      console.log(error);
+    })
   }
 
 }

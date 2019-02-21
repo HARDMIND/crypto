@@ -1,12 +1,13 @@
 
 import { Injectable } from '@angular/core';
-import { Data } from '../../app/Data';
+import {Criteria, Data, Option, QOCData} from '../../app/Data';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { MessagesProvider } from '../messages/messages';
 import {NavController} from "ionic-angular";
 import {LoginPage} from "../../pages/login/login";
 declare var require: any;
+
 
 /*
   Generated class for the WavesProvider provider.
@@ -32,6 +33,8 @@ export class WavesProvider {
 
     if(localStorage['projectPhrase'] != undefined && localStorage['projectPhrase'] != "" && localStorage['projectPhrase'] != null) {
       this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
+
+      console.log(this.projectSeed);
     } else {
       console.log("ProjectPhrase fehlt!");
     }
@@ -87,35 +90,37 @@ export class WavesProvider {
     });
   }
 
+
+
   /** Send data to nodes  */
-  public async sendData(data:any,projectPhrase = localStorage['projectPhrase'],userPhrase = localStorage['userPhrase']){
+  public async sendData(qdata:any,projectPhrase = localStorage['projectPhrase'],userPhrase = localStorage['userPhrase']){
+    /** Import Data Transaction from API */
+    const { data } = require('@waves/waves-transactions');
+
     // /** create process seed from phrase */
     const seedProcess =this.createSeedFromPhrase(projectPhrase) ;
 
     /** create sender seed from phrase */
     const seedSender = this.createSeedFromPhrase(userPhrase) ;
 
-    /** transfer waves from useracc to project acc
+    /** transfer waves from useracc to project acc */
+    console.log(qdata);
 
-    /** create qoc data object */
-    let dataObj ={
-      data: [data],
-      senderPublicKey: seedProcess.keyPair.publicKey,
-      sender: seedProcess.address,
-      fee:1000000
+    const params = {
+      data: qdata,
+      senderPublicKey: seedSender.keyPair.publicKey,
+      //timestamp: Date.now(),
+      //fee: 100000 + bytes.length * 100000
     };
 
-    /** prepare QOC data transaction object*/
-    const dataTx = await this.waves.tools.createTransaction("data", dataObj);
+    console.error(params);
 
-    /** add proof to QOC data transaction  */
-    dataTx.addProof(seedSender.keyPair.privateKey);
+    const signedDataTx = data(params, seedProcess.phrase);
+    console.log(signedDataTx);
 
-    /** create json from  dataTx object */
-    const txJSON = await dataTx.getJSON();
 
     /** send data  */
-    return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
+    return await this.waves.API.Node.transactions.rawBroadcast(signedDataTx);
   }
 
   /** Create account from phrase */
@@ -354,5 +359,90 @@ export class WavesProvider {
     }
 
     return isEnough;
+  }
+
+  /******************** Send QOC Data  *******************/
+  public async sendOptions(qocDataToSend:Option[], messageProvider:MessagesProvider, isFinal:boolean = false){
+
+    /** Check if qocList is not empty */
+    if(messageProvider.alert(qocDataToSend.length == 0, "Error", "Need data"))return;
+
+    console.log(qocDataToSend);
+
+    var newList = [];
+    var counterAllData = this.QOCData.length;
+    var counterOption = 0;
+    var counterCriteria = 0;
+    var counterCriteriaWeight = 0;
+
+    qocDataToSend.forEach(element => {
+
+      console.log(element.name);
+      /** Add option to list  */
+      var option = {
+        "key": Date.now() + "option" + (counterOption +counterAllData),
+        "type":"string",
+        "value":element.name
+      }
+      newList.push(option);
+      counterOption+=1;
+    });
+
+    /* send data */
+    if(this.sendData(newList)){
+      /** return result */
+      messageProvider.alert(true,"Output","QOC Data eingefügt \n");
+    }else{
+      messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
+    }
+
+  }
+
+  /******************** Send QOC Data  *******************/
+  public async sendCriteria(qocDataToSend:Criteria[], messageProvider:MessagesProvider, isFinal:boolean = false){
+
+    /** Check if qocList is not empty */
+    if(messageProvider.alert(qocDataToSend.length == 0, "Error", "Need data"))return;
+
+    console.log(qocDataToSend);
+
+    var newList = [];
+    var counterAllData = this.QOCData.length;
+    var counterOption = 0;
+    var counterCriteria = 0;
+    var counterCriteriaWeight = 0;
+
+    qocDataToSend.forEach(element => {
+
+      console.log(element.name);
+      /** Add option to list  */
+      /* Add criteria to list  */
+
+      var criteria = {
+        "key": Date.now() + "criteria" + (counterOption + counterAllData) + "&" + counterCriteria,
+        "type": "string",
+        "value": element.name
+      };
+      newList.push(criteria);
+      counterCriteria += 1;
+
+
+      var criteriaWeight = {
+        "key": Date.now() + "criteriaWeight" + (counterOption + counterAllData) + "&" + counterCriteriaWeight,
+        "type": "string",
+        "value": element.weight
+      };
+      newList.push(criteriaWeight);
+      counterCriteriaWeight += 1;
+    });
+
+    /* send data */
+    if(this.sendData(newList)){
+      /** return result */
+      messageProvider.alert(true,"Output","QOC Data eingefügt \n");
+    }else{
+      messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
+    }
+
   }
 }
