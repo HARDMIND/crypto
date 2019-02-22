@@ -95,7 +95,7 @@ export class WavesProvider {
   /** Send data to nodes  */
   public async sendData(qdata:any,projectPhrase = localStorage['projectPhrase'],userPhrase = localStorage['userPhrase']){
     /** Import Data Transaction from API */
-    const { data } = require('@waves/waves-transactions');
+    const { data, signTx } = require('@waves/waves-transactions');
 
     // /** create process seed from phrase */
     const seedProcess =this.createSeedFromPhrase(projectPhrase) ;
@@ -106,21 +106,30 @@ export class WavesProvider {
     /** transfer waves from useracc to project acc */
     console.log(qdata);
 
+    var fee = 100000 + (500000 - (qdata.length * 100000));
+
     const params = {
       data: qdata,
-      senderPublicKey: seedSender.keyPair.publicKey,
+      senderPublicKey: seedProcess.keyPair.publicKey,
+      sender: seedProcess.address,
       //timestamp: Date.now(),
-      //fee: 100000 + bytes.length * 100000
+      fee: fee
     };
 
+    /** prepare QOC data transaction object*/
+    const dataTx = await this.waves.tools.createTransaction("data", params);
     console.error(params);
 
+    /** add proof to QOC data transaction  */
+    dataTx.addProof(seedSender.keyPair.privateKey);
     const signedDataTx = data(params, seedProcess.phrase);
     console.log(signedDataTx);
 
+    /** create json from  dataTx object */
+    const txJSON = await dataTx.getJSON();
 
     /** send data  */
-    return await this.waves.API.Node.transactions.rawBroadcast(signedDataTx);
+    return await this.waves.API.Node.transactions.rawBroadcast(txJSON);
   }
 
   /** Create account from phrase */
