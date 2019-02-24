@@ -1,0 +1,101 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Kriterien</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-list>
+    <ion-list-header>Criteria</ion-list-header>
+    <ion-item *ngFor="let criteria of data.criterias; let i = index">
+      {{criteria.name}} / Weight: {{criteria.weight}}
+    </ion-item>
+
+  </ion-list>
+  <button ion-button full round (click)="addCriteriaBtn()">
+    <ion-icon name="add-circle"></ion-icon> Add criteria
+  </button>
+
+
+
+
+
+  <!--<ion-grid>-->
+  <!--<button item-end ion-button clear (click)="addOptionBtn()">-->
+  <!--<ion-icon color="primary" name="add-circle"></ion-icon>Add option-->
+  <!--</button>-->
+  <!--<ion-row>-->
+  <!--<ion-col class="option" *ngFor="let qoc of qocData; let i = index; ">-->
+  <!--<p class="borderBottom"> Option {{i}}</p> -->
+  <!--<ion-row>-->
+  <!--<ion-col>-->
+  <!--<br> {{qoc.option}}-->
+  <!--<button item-end ion-button clear (click)="addCriteriaBtn(qoc)">-->
+  <!--<ion-icon color="primary" name="add-circle"></ion-icon>Add criteria-->
+  <!--</button>-->
+  <!--</ion-col>-->
+  <!--</ion-row>-->
+  <!--<p class="borderBottom"> Criteria {{i}}</p> -->
+  <!--<ion-row class="criteria">-->
+  <!--<ion-col class="criteria" *ngFor="let listData of qoc.criteriaList; let j = index; ">-->
+  <!--<br> {{listData}}-->
+  <!--<ion-item>-->
+  <!--<ion-input [(ngModel)]="qoc.criteriaWeightList[j]" type="number" placeholder="Weight" floating ></ion-input>-->
+  <!--</ion-item>-->
+  <!--</ion-col>-->
+  <!--</ion-row>-->
+  <!--</ion-col>-->
+  <!--</ion-row>-->
+  <!--<button ion-button round (click)="sendQOC()">Send</button>-->
+  <!--</ion-grid>-->
+  <!---->
+
+  <!--
+      <ion-grid>
+          <ion-col >
+              <ion-row >
+                      <h4 ion-text color="danger">{{textQOC}}</h4>
+              </ion-row>
+              <ion-row >
+                  <ion-col>
+                      <ion-item>
+                          <ion-label color="primary" floating>Add Option </ion-label>
+                          <ion-input  align-items-center type="text" [(ngModel)]="inputOption"></ion-input>
+                      </ion-item>
+                  </ion-col>
+              </ion-row>
+
+              <ion-row >
+                  <ion-col>
+                      <ion-item>
+                              <ion-label color="primary" floating>Add Criteria</ion-label>
+                              <ion-input  align-items-center type="text" [(ngModel)]="inputCriteria"></ion-input>
+                      </ion-item>
+                  </ion-col>
+                  <ion-col>
+                      <ion-item>
+                              <ion-label color="primary" floating>Add Criteria weight</ion-label>
+                              <ion-input  align-items-center type="number" [(ngModel)]="inputCriteriaWeight"></ion-input>
+                      </ion-item>
+                  </ion-col>
+              </ion-row>
+              <ion-row >
+                  <button ion-button (click)="addQOC()">Add QOC to list</button>
+                  <button ion-button (click)="sendQOC()">Send</button>
+              </ion-row>
+          </ion-col>
+      </ion-grid> -->
+
+
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <button ion-button full round (click)="sendQOC()">Send</button>
+  </ion-toolbar>
+</ion-footer>

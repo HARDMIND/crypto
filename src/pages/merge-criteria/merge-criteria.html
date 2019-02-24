@@ -1,0 +1,39 @@
+<!--
+  Generated template for the MergeCriteriaPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Merge Criterias</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-grid *ngIf="wavesProvider.data.criterias.length > 0">
+    <ion-row>
+      <ion-col>
+        #
+      </ion-col>
+      <ion-col>
+        Option
+      </ion-col>
+    </ion-row>
+    <ion-row *ngFor="let data of wavesProvider.data.criterias;let i = index ">
+      <ion-col>
+        <ion-checkbox [(ngModel)]="mergeProvider.criteriaCheckboxes[i]" (ionChange)="checked()"></ion-checkbox>
+      </ion-col>
+      <ion-col>
+        {{data.name}}
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <button  *ngIf="wavesProvider.data.criterias.length > 0 && stepOne == true && wavesProvider.isFinal == false" disabled ion-button round [disabled]="isDisabled" (click)="evaluationProvider.mergeEntries()">Merge</button>
+  <button ion-button round (click)="save()">Save Data</button>
+
+</ion-content>
