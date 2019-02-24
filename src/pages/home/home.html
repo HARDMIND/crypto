@@ -40,16 +40,24 @@
 
   <ion-list class="ion-list">
 
-    <ion-list-header>
+    <ion-list-header *ngIf="!wavesProvider.isFinal">
       Business Processe
     </ion-list-header>
-    <ion-item (click)="openAddQoc()">Add Option</ion-item>
-    <ion-item (click)="openAddCriteria()">Add Criteria</ion-item>
+    <ion-item (click)="openAddQoc()" *ngIf="!wavesProvider.isFinal">Add Option</ion-item>
+    <ion-item (click)="openAddCriteria()" *ngIf="!wavesProvider.isFinal">Add Criteria</ion-item>
 
-    <ion-list-header>
+    <ion-list-header *ngIf="!wavesProvider.isFinal">
       Projectmanager
     </ion-list-header>
-    <ion-item (click)="openEvaluateQoc()">Evaluate QOC</ion-item>
+    <ion-item (click)="openEvaluateQoc()" *ngIf="!wavesProvider.isFinal">Merge Options</ion-item>
+    <ion-item (click)="openMergeCriteria()" *ngIf="!wavesProvider.isFinal">Merge Criteria</ion-item>
+    <ion-item (click)="openEvaluateQoc()" *ngIf="!wavesProvider.isFinal">Release for Rating</ion-item>
+
+    <ion-list-header *ngIf="wavesProvider.isFinal">
+      Rate
+    </ion-list-header>
+    <ion-item (click)="openEvaluateQoc()" *ngIf="wavesProvider.isFinal">Rate</ion-item>
+
     <button ion-button round (click)="logout()">Logout</button>
   </ion-list>
 

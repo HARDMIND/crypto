@@ -10,7 +10,7 @@
 <ion-content padding>
     <!-- ------------------STEP ONE--------------- -->
     <p *ngIf="stepOne == true && wavesProvider.isFinal == false">Step #1: Merge options</p>
-    <ion-grid *ngIf="evaluationProvider.dataList.length > 0 && stepOne == true">
+    <ion-grid *ngIf="evaluationProvider.dataList.options.length > 0 && stepOne == true">
         <ion-row>
             <ion-col>
                 #
@@ -19,27 +19,28 @@
                    Option
             </ion-col>
         </ion-row>
-        <ion-row *ngFor="let data of evaluationProvider.dataList;let i = index ">
+        <ion-row *ngFor="let data of evaluationProvider.dataList.options;let i = index ">
             <ion-col>
                 <ion-checkbox [(ngModel)]="evaluationProvider.checkBoxes[i]" (ionChange)="checked()"></ion-checkbox>
             </ion-col>
             <ion-col>
-                {{data.option}}
+                {{data.name}}
             </ion-col>
         </ion-row>
     </ion-grid>
-    <button  *ngIf="evaluationProvider.dataList.length > 0 && stepOne == true && wavesProvider.isFinal == false" disabled ion-button round [disabled]="isDisabled" (click)="evaluationProvider.mergeEntries()">Merge</button>
-    <button  *ngIf="stepOne == true && wavesProvider.isFinal == false" ion-button round (click)="goToStepTwo()">To step #2</button>
+    <button  *ngIf="evaluationProvider.dataList.options.length > 0 && stepOne == true && wavesProvider.isFinal == false" disabled ion-button round [disabled]="isDisabled" (click)="evaluationProvider.mergeEntries()">Merge</button>
+    <button ion-button round (click)="save()">Save Data</button>
+<!--    <button  *ngIf="stepOne == true && wavesProvider.isFinal == false" ion-button round (click)="goToStepTwo()">To step #2</button> -->
 
     <!-- ------------------STEP TWO--------------- -->
     <p *ngIf="stepTwo == true">Step #2: Add Edges value</p>
     <ion-grid *ngIf="stepTwo == true">
         <ion-row>
-            <ion-col class="option" *ngFor="let qoc of evaluationProvider.dataList; let i = index; ">
-                <p class="borderBottom"> Option {{i}}</p> 
+            <ion-col class="option" *ngFor="let qoc of evaluationProvider.dataList.criterias; let i = index; ">
+                <p class="borderBottom"> Criteria {{i}}</p>
                 <ion-row>
                     <ion-col>
-                        <br> {{qoc.option}}
+                        <br> {{qoc.name}}
                     </ion-col>
                 </ion-row>
                 <p class="borderBottom"> Criteria {{i}}</p> 

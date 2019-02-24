@@ -22,6 +22,7 @@ export class WavesProvider {
   waves: any;
   dataList : Data[] = [];
   QOCData : Data[] = [];
+  data : QOCData;
   finalData: Data = new Data("");
   isFinal:boolean = false;
 
@@ -31,10 +32,18 @@ export class WavesProvider {
     this.wavesApi =  require('@waves/waves-api');
     this.waves = this.wavesApi.create(this.wavesApi.TESTNET_CONFIG);
 
-    if(localStorage['projectPhrase'] != undefined && localStorage['projectPhrase'] != "" && localStorage['projectPhrase'] != null) {
+
+
+    if(localStorage.getItem('projectPhrase').length > 15) {
       this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
 
       console.log(this.projectSeed);
+      this.getData().then((success) => {
+        console.log("getData");
+      }, (error) => {
+        console.log("Fehler");
+        console.error(error);
+      });
     } else {
       console.log("ProjectPhrase fehlt!");
     }
@@ -44,20 +53,26 @@ export class WavesProvider {
   public async getData(){
     this.QOCData = [];
     this.dataList = [];
+    this.data = new QOCData();
+
     var getDataList:Observable<any> = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+this.projectSeed.address);
 
     getDataList.subscribe(allData => {
 
       /** Check if final data is available */
-      var finalData:any = allData.find(element => element.key.indexOf('final') >= 0);
+      var finalData:any = allData.find(element => element.key == "5");
 
 
       if(finalData != undefined ){
         console.log(finalData);
+        console.log("FinalData Received!");
         this.finalData = new Data(finalData.value);
         this.isFinal = true;
-      }else{
-        console.log("after");
+
+        //@TODO FinalData auslesen;
+      } else {
+        console.log("not final");
+        this.isFinal = false;
         /** Search for all options */
         var allOptions = allData.filter(element => element.key.indexOf('option') >= 0);
 
@@ -68,8 +83,12 @@ export class WavesProvider {
           var elementOptionCounter = element.key.substring(stringIndex+6);
 
           var qocData : Data = new Data(element.value);
+          this.data.addOption(element.value);
 
-          /** Find all criteria */
+
+          /** Find all criteria
+           *
+           * */
           var criterialist = allData.filter(data => data.key.indexOf('criteria'+elementOptionCounter) >= 0);
           criterialist.forEach(element => {
             qocData.criteriaList.push(element.value);
@@ -82,12 +101,26 @@ export class WavesProvider {
             qocData.edgeWeightList.push(0);
           });
 
+
           /** Push data to array */
           this.QOCData.push(qocData);
         });
       }
 
+
+      var allCriteria = allData.filter(element => element.key.indexOf('criteria') >= 0);
+      /** go through all options and search for criteria and criteriaweight */
+      allCriteria.forEach(element => {
+        var stringIndex = element.key.indexOf('criteria');
+        /** Get option counter to get criteria and criteriaweight */
+        var elementOptionCounter = element.key.substring(stringIndex + 6);
+
+
+      });
+
     });
+
+
   }
 
 
@@ -106,7 +139,7 @@ export class WavesProvider {
     /** transfer waves from useracc to project acc */
     console.log(qdata);
 
-    var fee = 100000 + (500000 - (qdata.length * 100000));
+    var fee = 500000;
 
     const params = {
       data: qdata,
@@ -381,22 +414,39 @@ export class WavesProvider {
     var newList = [];
     var counterAllData = this.QOCData.length;
     var counterOption = 0;
-    var counterCriteria = 0;
-    var counterCriteriaWeight = 0;
 
-    qocDataToSend.forEach(element => {
+    let type = {
+      "key" : "type",
+      "type" : "string",
+      "value": (isFinal) ? "3" : "2"
+    };
 
-      console.log(element.name);
-      /** Add option to list  */
-      var option = {
-        "key": Date.now() + "option" + (counterOption +counterAllData),
-        "type":"string",
-        "value":element.name
-      }
+    newList.push(type);
+
+    if(!isFinal) {
+      qocDataToSend.forEach(element => {
+
+        console.log(element.name);
+        /** Add option to list  */
+        var option = {
+          "key": Date.now() + "option" + (counterOption + counterAllData),
+          "type": "string",
+          "value": element.name
+        }
+        newList.push(option);
+        counterOption += 1;
+      });
+
+    } else {
+      console.log(JSON.stringify(qocDataToSend));
+      let option = {
+        "key" : "_finalOption",
+        "type": "string",
+        "value" : JSON.stringify(qocDataToSend)
+      };
+
       newList.push(option);
-      counterOption+=1;
-    });
-
+    }
     /* send data */
     if(this.sendData(newList)){
       /** return result */

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { WavesProvider } from '../waves/waves';
-import { Data } from '../../app/Data';
+import {Data, QOCData} from '../../app/Data';
 import { AlertController, NavController } from 'ionic-angular';
 
 /*
@@ -11,16 +11,19 @@ import { AlertController, NavController } from 'ionic-angular';
 */
 @Injectable()
 export class EvaluationProvider {
-  public dataList : Data[] = [];
+  public dataList : QOCData = new QOCData();
   public checkBoxes: boolean[] = [];
 
   constructor(  private alertCtrl:AlertController, private wavesProvider:WavesProvider) {
+    console.info("EvaluationProvivider");
+
   }
 
   /** reinit all checkboxes  */
   initCheckBox(){
+
     this.checkBoxes = [];
-    for(var i = 0;i<this.dataList.length+1; i++){
+    for(var i = 0;i<this.dataList.options.length+1; i++){
       this.checkBoxes.push(false);
     }
   }
@@ -46,26 +49,17 @@ export class EvaluationProvider {
         {
           text: 'Save',
           handler: data => {
-            var newMergeData : Data = new Data(data.name);
-            var newDataList : Data[] = [];
 
-            for(var i=0;i<this.checkBoxes.length;i++){
-              if(this.checkBoxes[i]){
-                this.dataList[i].criteriaList.forEach(element => {
-                  newMergeData.criteriaList.push(element);
-                });
-                this.dataList[i].criteriaWeightList.forEach(element => {
-                  newMergeData.criteriaWeightList.push(element);
-                });
-                console.log(this.dataList[i]);
-              }else{
-                newDataList.push(this.dataList[i]);
+            for(let i=this.checkBoxes.length-1;i>=0;i--) {
+              if(this.checkBoxes[i]) {
+                console.log("Checkbox checked: " + i);
+                this.dataList.removeOption(i);
               }
             }
-            console.log(newMergeData);
-            newDataList.push(newMergeData);
 
-            this.dataList = newDataList;
+            this.dataList.addOption(data.name);
+            console.log(this.dataList);
+            //this.dataList = newDataList;
             this.initCheckBox();
           }
         }
@@ -136,7 +130,7 @@ export class EvaluationProvider {
     var maxValueData : Data;
 
     /** get the data with max weight value  */
-    for(var i=0;i<this.dataList.length;i++){
+    for(var i=0;i<this.dataList.options.length;i++){
       // if(this.dataList[i].weightCalculated > maxValue){
       //   //maxValue = this.dataList[i].weightCalculated;
       //   maxValueData = this.dataList[i];
@@ -156,10 +150,10 @@ export class EvaluationProvider {
       console.log(data); 
 
       /** refresh list  */
-      this.dataList= [];
+      //this.dataList= [];
       
-      this.dataList.push(maxValueData);
-      this.wavesProvider.dataList = this.dataList;
+      //this.dataList.push(maxValueData);
+      //this.wavesProvider.dataList = this.dataList;
       return maxValueData;
     }
 

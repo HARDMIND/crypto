@@ -18,6 +18,8 @@ import { EvaluationProvider } from '../providers/evaluation/evaluation';
 import IonicStepperModule from "ionic-stepper";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AddCriteriaPage} from "../pages/add-criteria/add-criteria";
+import {MergeCriteriaPage} from "../pages/merge-criteria/merge-criteria";
+import { MergeProvider } from '../providers/merge/merge';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import {AddCriteriaPage} from "../pages/add-criteria/add-criteria";
     DeleteProcessPage,
     EvaluatePage,
     LoginPage,
-    AddCriteriaPage
+    AddCriteriaPage,
+    MergeCriteriaPage
   ],
   imports: [
     BrowserModule,
@@ -46,7 +49,8 @@ import {AddCriteriaPage} from "../pages/add-criteria/add-criteria";
     DeleteProcessPage,
     EvaluatePage,
     LoginPage,
-    AddCriteriaPage
+    AddCriteriaPage,
+    MergeCriteriaPage
   ],
   providers: [
     StatusBar,
@@ -55,7 +59,8 @@ import {AddCriteriaPage} from "../pages/add-criteria/add-criteria";
     // TestServiceProvider,
     MessagesProvider,
     WavesProvider,
-    EvaluationProvider
+    EvaluationProvider,
+    MergeProvider
   ]
 })
 export class AppModule {}

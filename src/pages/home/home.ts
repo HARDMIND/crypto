@@ -8,6 +8,7 @@ import { MessagesProvider } from '../../providers/messages/messages';
 import { WavesProvider } from '../../providers/waves/waves';
 import { LoginPage} from '../login/login';
 import {AddCriteriaPage} from "../add-criteria/add-criteria";
+import {MergeCriteriaPage} from "../merge-criteria/merge-criteria";
 
 @Component({
   selector: 'page-home',
@@ -54,6 +55,11 @@ export class HomePage {
   /******************** open evaluate page  *******************/
   openEvaluateQoc(){
     this.navCtrl.push(EvaluatePage);
+  }
+
+  /******************** open evaluate page  *******************/
+  openMergeCriteria(){
+    this.navCtrl.push(MergeCriteriaPage);
   }
 
   logout(){

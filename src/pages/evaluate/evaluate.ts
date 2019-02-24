@@ -25,7 +25,9 @@ export class EvaluatePage {
 
   ionViewDidLoad(){
     this.wavesProvider.getData();
-    this.evaluationProvider.dataList = this.wavesProvider.QOCData;
+    console.log(this.wavesProvider.data);
+    console.log("Option Data geladen");
+    this.evaluationProvider.dataList = this.wavesProvider.data;
   }
 
   /******************** Evaluate data  *******************/
@@ -45,6 +47,9 @@ export class EvaluatePage {
     }
   }
 
+  save() {
+    this.wavesProvider.sendOptions(this.evaluationProvider.dataList.options, this.messageProvider, true);
+  }
   /** Go to next step  */
   goToStepTwo(){
     let alert = this.messageProvider.alertCtrl.create({
@@ -70,7 +75,7 @@ export class EvaluatePage {
   }
 
   sendFinalData(){
-    this.evaluationProvider.sendFinalOptions(this.evaluationProvider.dataList,this.navCtrl,HomePage);
+    //this.evaluationProvider.sendFinalOptions(this.evaluationProvider.dataList,this.navCtrl,HomePage);
   }
 
 

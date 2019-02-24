@@ -39,7 +39,8 @@ export class QOCData {
 
   /** Option löschen */
   public removeOption(id : number) {
-    this.options.slice(id, 1);
+    let rem = this.options.splice(id, 1);
+    console.info("Removed: " + rem);
   }
 
   /** Option ändern */

@@ -39,6 +39,7 @@ export class LoginPage {
     localStorage['userPhrase'] = this.userPhrase;
     localStorage['projectPhrase'] = this.projectPhrase;
 
+    console.log("Login: ProjectPhrase: " + localStorage['projectPhrase']);
     
     if((this.projectPhrase == "" || this.projectPhrase == undefined) 
         && (this.userPhrase != "" && this.userPhrase != undefined)){
