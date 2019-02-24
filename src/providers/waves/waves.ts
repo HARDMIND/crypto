@@ -36,7 +36,7 @@ export class WavesProvider {
 
     if(localStorage.getItem('projectPhrase').length > 15) {
       this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
-
+      console.log("Projekseed:");
       console.log(this.projectSeed);
       this.getData().then((success) => {
         console.log("getData");
@@ -76,51 +76,46 @@ export class WavesProvider {
         /** Search for all options */
         var allOptions = allData.filter(element => element.key.indexOf('option') >= 0);
 
-        /** go through all options and search for criteria and criteriaweight */
-        allOptions.forEach(element => {
-          var stringIndex = element.key.indexOf('option');
-          /** Get option counter to get criteria and criteriaweight */
-          var elementOptionCounter = element.key.substring(stringIndex+6);
 
-          var qocData : Data = new Data(element.value);
-          this.data.addOption(element.value);
+        if (allOptions.length > 0) {
+          console.info(allOptions);
 
+          /** go through all options and search for criteria and criteriaweight */
+          allOptions.forEach(element => {
+            var stringIndex = element.key.indexOf('option');
+            /** Get option counter to get criteria and criteriaweight */
+            var elementOptionCounter = element.key.substring(stringIndex + 6);
 
-          /** Find all criteria
-           *
-           * */
-          var criterialist = allData.filter(data => data.key.indexOf('criteria'+elementOptionCounter) >= 0);
-          criterialist.forEach(element => {
-            qocData.criteriaList.push(element.value);
+            this.data.addOption(element.value);
+
           });
-
-          /** Find all criteriaweight */
-          var criteriaWeightlist = allData.filter(data => data.key.indexOf('criteriaWeight'+elementOptionCounter) >= 0);
-          criteriaWeightlist.forEach(element => {
-            qocData.criteriaWeightList.push(element.value);
-            qocData.edgeWeightList.push(0);
-          });
-
-
-          /** Push data to array */
-          this.QOCData.push(qocData);
-        });
+        }
       }
 
 
+
       var allCriteria = allData.filter(element => element.key.indexOf('criteria') >= 0);
-      /** go through all options and search for criteria and criteriaweight */
-      allCriteria.forEach(element => {
-        var stringIndex = element.key.indexOf('criteria');
-        /** Get option counter to get criteria and criteriaweight */
-        var elementOptionCounter = element.key.substring(stringIndex + 6);
 
+      //console.log(allCriteria);
 
-      });
+      if(allCriteria.length > 0) {
+        /** go through all options and search for criteria and criteriaweight */
+        allCriteria.forEach(element => {
 
+          try {
+            let array = JSON.parse(element.value);
+            array.forEach(entry => {
+              this.data.addCriteria(entry.name, entry.weight);
+            })
+          } catch (e) {
+            console.error(e);
+          }
+
+        });
+      }
     });
 
-
+console.info(this.data);
   }
 
 
@@ -466,34 +461,23 @@ export class WavesProvider {
     console.log(qocDataToSend);
 
     var newList = [];
-    var counterAllData = this.QOCData.length;
-    var counterOption = 0;
-    var counterCriteria = 0;
-    var counterCriteriaWeight = 0;
 
-    qocDataToSend.forEach(element => {
-
-      console.log(element.name);
-      /** Add option to list  */
       /* Add criteria to list  */
 
       var criteria = {
-        "key": Date.now() + "criteria" + (counterOption + counterAllData) + "&" + counterCriteria,
+        "key": "type",
         "type": "string",
-        "value": element.name
+        "value": "3"
       };
+
       newList.push(criteria);
-      counterCriteria += 1;
 
-
-      var criteriaWeight = {
-        "key": Date.now() + "criteriaWeight" + (counterOption + counterAllData) + "&" + counterCriteriaWeight,
-        "type": "string",
-        "value": element.weight
+      let array = {
+        "key" : Date.now()+"criteria",
+        "type" : "string",
+        "value" : JSON.stringify(qocDataToSend)
       };
-      newList.push(criteriaWeight);
-      counterCriteriaWeight += 1;
-    });
+      newList.push(array);
 
     /* send data */
     if(this.sendData(newList)){
