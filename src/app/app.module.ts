@@ -20,6 +20,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {AddCriteriaPage} from "../pages/add-criteria/add-criteria";
 import {MergeCriteriaPage} from "../pages/merge-criteria/merge-criteria";
 import { MergeProvider } from '../providers/merge/merge';
+import {RatingPage} from "../pages/rating/rating";
+import {ResultPage} from "../pages/result/result";
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import { MergeProvider } from '../providers/merge/merge';
     EvaluatePage,
     LoginPage,
     AddCriteriaPage,
-    MergeCriteriaPage
+    MergeCriteriaPage,
+    RatingPage,
+    ResultPage
   ],
   imports: [
     BrowserModule,
@@ -50,7 +54,9 @@ import { MergeProvider } from '../providers/merge/merge';
     EvaluatePage,
     LoginPage,
     AddCriteriaPage,
-    MergeCriteriaPage
+    MergeCriteriaPage,
+    RatingPage,
+    ResultPage
   ],
   providers: [
     StatusBar,
