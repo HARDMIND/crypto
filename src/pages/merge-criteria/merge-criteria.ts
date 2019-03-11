@@ -52,6 +52,10 @@ export class MergeCriteriaPage {
     }
   }
 
+  removeItem(id : number) {
+    this.wavesProvider.data.removeCriteria(id);
+  }
+
   save() {
     //@TODO
     this.wavesProvider.sendCriteria(this.wavesProvider.data.criterias, this.messageProvider, true);

@@ -8,7 +8,7 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding *ngIf="!wavesProvider.isCriteriaFinal">
 
   <ion-list>
     <ion-list-header>Criteria</ion-list-header>
@@ -94,7 +94,12 @@
 
 
 </ion-content>
-<ion-footer>
+
+<ion-content padding *ngIf="wavesProvider.isCriteriaFinal">
+  Die Abgabe der Kriterien wurde beendet.
+</ion-content>
+
+<ion-footer *ngIf="!wavesProvider.isCriteriaFinal">
   <ion-toolbar>
     <button ion-button full round (click)="sendQOC()">Send</button>
   </ion-toolbar>

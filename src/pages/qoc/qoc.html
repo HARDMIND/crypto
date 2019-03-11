@@ -8,7 +8,7 @@
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding *ngIf="!wavesProvider.isOptionsFinal">
 
 <ion-list>
   <ion-list-header>Optionen</ion-list-header>
@@ -94,7 +94,10 @@
 
 
 </ion-content>
-<ion-footer>
+<ion-content padding *ngIf="wavesProvider.isOptionsFinal">
+  Leider wurde die Abgabe von Optionen bereits beendet!
+</ion-content>
+<ion-footer *ngIf="!wavesProvider.isOptionsFinal">
   <ion-toolbar>
     <button ion-button full round (click)="sendQOC()">Send</button>
   </ion-toolbar>

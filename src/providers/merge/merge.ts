@@ -39,13 +39,35 @@ export class MergeProvider {
 
   /** merge selected entries to one entry  */
   public mergeCriteriaEntries(){
+  let checkedCount = 0;
+  let newWeight = 0;
+
+    for(let i=this.criteriaCheckboxes.length-1;i>=0;i--) {
+      if (this.criteriaCheckboxes[i]) {
+        checkedCount++;
+        let criteriaWeight = +this.wavesProvider.data.criterias[i].weight
+        newWeight = newWeight + criteriaWeight;
+        console.log(this.wavesProvider.data.criterias[i].weight);
+      }
+    }
+
+    console.log("Checked: " + checkedCount);
+    console.log("Weight (addiert): " + newWeight);
+    console.log("Weight (geteilt): " + newWeight / checkedCount);
+
     let alert = this.alertCtrl.create({
       title: 'New data name',
       inputs: [
         {
           name: 'name',
           placeholder: 'name'
-        }
+        },
+        {
+          name: 'weight',
+          value: newWeight / checkedCount + "",
+          disabled: true,
+
+        },
       ],
       buttons: [
         {
@@ -62,11 +84,11 @@ export class MergeProvider {
             for(let i=this.criteriaCheckboxes.length-1;i>=0;i--) {
               if(this.criteriaCheckboxes[i]) {
                 console.log("Checkbox checked: " + i);
-                this.wavesProvider.data.removeOption(i);
+                this.wavesProvider.data.removeCriteria(i);
               }
             }
 
-            this.wavesProvider.data.addOption(data.name);
+            this.wavesProvider.data.addCriteria(data.name, data.weight);
             console.log(this.wavesProvider.data);
             //this.dataList = newDataList;
             this.initCheckBox();

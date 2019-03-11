@@ -9,6 +9,9 @@ import { WavesProvider } from '../../providers/waves/waves';
 import { LoginPage} from '../login/login';
 import {AddCriteriaPage} from "../add-criteria/add-criteria";
 import {MergeCriteriaPage} from "../merge-criteria/merge-criteria";
+import {Rating} from "../../model/rating";
+import {RatingPage} from "../rating/rating";
+import {ResultPage} from "../result/result";
 
 @Component({
   selector: 'page-home',
@@ -62,9 +65,25 @@ export class HomePage {
     this.navCtrl.push(MergeCriteriaPage);
   }
 
+  openShowRating() {
+    this.navCtrl.push(ResultPage
+    );
+  }
+
+  /** Open Rating for everyone! **/
+  openRating() {
+
+    this.navCtrl.push(RatingPage);
+  }
+
   logout(){
     localStorage['userPhrase']="";
-    localStorage['projectPhras']="";
+    localStorage['projectPhrase']="";
+
+    this.wavesProvider.projectSeed =  null;
+    this.wavesProvider.data = null;
+    this.wavesProvider.finalQOCData = null;
+
     this.navCtrl.push(LoginPage);
   }
   

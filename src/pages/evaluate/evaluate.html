@@ -7,7 +7,7 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content padding >
     <!-- ------------------STEP ONE--------------- -->
     <p *ngIf="stepOne == true && wavesProvider.isFinal == false">Step #1: Merge options</p>
     <ion-grid *ngIf="evaluationProvider.dataList.options.length > 0 && stepOne == true">
@@ -24,7 +24,7 @@
                 <ion-checkbox [(ngModel)]="evaluationProvider.checkBoxes[i]" (ionChange)="checked()"></ion-checkbox>
             </ion-col>
             <ion-col>
-                {{data.name}}
+                {{data.name}} <ion-icon name="trash" (click)="removeItem(i)"></ion-icon>
             </ion-col>
         </ion-row>
     </ion-grid>
@@ -65,6 +65,10 @@
     <!-- ------------------STEP THREE--------------- -->
     <p *ngIf="wavesProvider.isFinal == true">Step #3: Final result</p>
     <p *ngIf="wavesProvider.isFinal == true">{{wavesProvider.finalData.option}}</p>
+</ion-content>
+
+<ion-content padding *ngIf="wavesProvider.isOptionsFinal">
+  Optionen wurden bereits gemerged!
 </ion-content>
 
 

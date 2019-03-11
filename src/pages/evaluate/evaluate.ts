@@ -74,6 +74,10 @@ export class EvaluatePage {
     alert.present();
   }
 
+  removeItem(id : number) {
+    this.wavesProvider.data.removeOption(id);
+  }
+
   sendFinalData(){
     //this.evaluationProvider.sendFinalOptions(this.evaluationProvider.dataList,this.navCtrl,HomePage);
   }

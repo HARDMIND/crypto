@@ -13,15 +13,14 @@
 </ion-header>
 
 
-<ion-content padding>
-
+<ion-content padding *ngIf="!wavesProvider.isCriteriaFinal">
   <ion-grid *ngIf="wavesProvider.data.criterias.length > 0">
     <ion-row>
       <ion-col>
         #
       </ion-col>
       <ion-col>
-        Option
+        Criteria
       </ion-col>
     </ion-row>
     <ion-row *ngFor="let data of wavesProvider.data.criterias;let i = index ">
@@ -29,11 +28,14 @@
         <ion-checkbox [(ngModel)]="mergeProvider.criteriaCheckboxes[i]" (ionChange)="checked()"></ion-checkbox>
       </ion-col>
       <ion-col>
-        {{data.name}}
+        {{data.name}} ({{data.weight}}) <ion-icon name="trash" (click)="removeItem(i)"></ion-icon>
       </ion-col>
     </ion-row>
   </ion-grid>
-  <button  *ngIf="wavesProvider.data.criterias.length > 0 && stepOne == true && wavesProvider.isFinal == false" disabled ion-button round [disabled]="isDisabled" (click)="evaluationProvider.mergeEntries()">Merge</button>
+  <button  *ngIf="wavesProvider.data.criterias.length > 0 && wavesProvider.isFinal == false" disabled ion-button round [disabled]="isDisabled" (click)="mergeProvider.mergeCriteriaEntries()">Merge</button>
   <button ion-button round (click)="save()">Save Data</button>
 
+</ion-content>
+<ion-content padding *ngIf="wavesProvider.isCriteriaFinal">
+  Die Kriterien wurden bereits gemerget.
 </ion-content>

@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { MessagesProvider } from '../messages/messages';
 import {NavController} from "ionic-angular";
 import {LoginPage} from "../../pages/login/login";
+import {Connection, Rating, Result} from "../../model/rating";
 declare var require: any;
 
 
@@ -24,7 +25,13 @@ export class WavesProvider {
   QOCData : Data[] = [];
   data : QOCData;
   finalData: Data = new Data("");
-  isFinal:boolean = false;
+  finalQOCData : QOCData = new QOCData();
+  isFinal : boolean = false;
+
+  isOptionsFinal = false;
+  isCriteriaFinal = false;
+  isReadyResult = false;
+  results : Result[] = [];
 
   constructor(
     public httpClient: HttpClient
@@ -33,8 +40,8 @@ export class WavesProvider {
     this.waves = this.wavesApi.create(this.wavesApi.TESTNET_CONFIG);
 
 
-
-    if(localStorage.getItem('projectPhrase').length > 15) {
+    console.log(localStorage.getItem('projectPhrase'));
+    if(localStorage.getItem('projectPhrase') && localStorage.getItem('projectPhrase').length > 15) {
       this.projectSeed = this.createSeedFromPhrase(localStorage['projectPhrase']);
       console.log("Projekseed:");
       console.log(this.projectSeed);
@@ -55,21 +62,80 @@ export class WavesProvider {
     this.dataList = [];
     this.data = new QOCData();
 
+    console.log(this.projectSeed.address);
+
     var getDataList:Observable<any> = this.httpClient.get('https://pool.testnet.wavesnodes.com/addresses/data/'+this.projectSeed.address);
 
     getDataList.subscribe(allData => {
 
+      /** Check if Option Merge Done **/
+      var optionFinalData = allData.find(element => element.key == "_finalOptionData");
+
+      console.log(optionFinalData);
+
+        if (optionFinalData != undefined) {
+          console.log("Option Data is final!");
+          this.isOptionsFinal = true;
+        }  else {
+          console.log("Optionen können hinzugefügt + gemerged werden!");
+        }
+
+      /** Check if Criteria Merge Done **/
+      var criteriaFinalData = allData.find(element => element.key == "_finalCriteriaData");
+
+      console.log(criteriaFinalData);
+
+      if (criteriaFinalData != undefined) {
+        console.log("Criteria Data is final!");
+        this.isCriteriaFinal = true;
+      }  else {
+        console.log("Kriterien können hinzugefügt + gemerged werden!");
+      }
+
+      /** Check if Criteria Merge Done **/
+      let finalResultData = allData.filter(element => element.key.indexOf('_MemberRatingData') >= 0);
+
+      console.log(finalResultData);
+      if (finalResultData != undefined) {
+        console.log("Result Data available!");
+        finalResultData.forEach(element => {
+          console.log(element);
+
+          let resultData : Result[] = [];
+          let resultArray = [];
+          resultArray = JSON.parse(element.value);
+
+          resultArray.forEach(result => {
+            this.results.push(result);
+          });
+
+        });
+
+        this.isReadyResult = true;
+
+      }  else {
+        console.log("Keine ResultData vorhanden!");
+      }
+
       /** Check if final data is available */
-      var finalData:any = allData.find(element => element.key == "5");
+      var finalData:any = allData.find(element => element.key == "_finalQOCData");
 
+      if (this.isCriteriaFinal && this.isOptionsFinal) {
+        console.log("Date complete!");
+        this.finalQOCData = new QOCData();
 
-      if(finalData != undefined ){
-        console.log(finalData);
-        console.log("FinalData Received!");
-        this.finalData = new Data(finalData.value);
         this.isFinal = true;
+        let optionData = JSON.parse(optionFinalData.value);
 
-        //@TODO FinalData auslesen;
+        console.log(optionData);
+        /** Add all Options to finalData Object**/
+        this.finalQOCData.options = optionData;
+
+        let criteriaData = JSON.parse(criteriaFinalData.value);
+        this.finalQOCData.criterias = criteriaData;
+
+        console.log(this.finalQOCData);
+        console.log(JSON.stringify(this.finalQOCData));
       } else {
         console.log("not final");
         this.isFinal = false;
@@ -106,7 +172,7 @@ export class WavesProvider {
             let array = JSON.parse(element.value);
             array.forEach(entry => {
               this.data.addCriteria(entry.name, entry.weight);
-            })
+            });
           } catch (e) {
             console.error(e);
           }
@@ -115,7 +181,7 @@ export class WavesProvider {
       }
     });
 
-console.info(this.data);
+      console.info(this.data);
   }
 
 
@@ -134,7 +200,7 @@ console.info(this.data);
     /** transfer waves from useracc to project acc */
     console.log(qdata);
 
-    var fee = 500000;
+    var fee = 600000;
 
     const params = {
       data: qdata,
@@ -410,6 +476,17 @@ console.info(this.data);
     var counterAllData = this.QOCData.length;
     var counterOption = 0;
 
+    if(isFinal) {
+      console.log("Optionen finalisieren!");
+
+      let final = {
+        "key": "_finalOptionData",
+        "type": "string",
+        "value": JSON.stringify(qocDataToSend)
+      };
+      newList.push(final);
+    }
+
     let type = {
       "key" : "type",
       "type" : "string",
@@ -452,6 +529,32 @@ console.info(this.data);
 
   }
 
+  public async sendRatingData(data : Rating, messageProvider) {
+
+    let list = [];
+
+    console.log(data.result);
+
+    let v = {
+      "key" : Date.now() + "_MemberRatingData",
+      "type" : "string",
+      "value" : JSON.stringify(data.result)
+    };
+
+    list.push(v);
+
+    console.log(list);
+
+
+    /* send data */
+    if(this.sendData(list)){
+      /** return result */
+      messageProvider.alert(true,"Output","QOC Data eingefügt \n");
+    }else{
+      messageProvider.alert(true,"Output","QOC Data NICHT eingefügt \n");
+    }
+  }
+
   /******************** Send QOC Data  *******************/
   public async sendCriteria(qocDataToSend:Criteria[], messageProvider:MessagesProvider, isFinal:boolean = false){
 
@@ -463,21 +566,23 @@ console.info(this.data);
     var newList = [];
 
       /* Add criteria to list  */
-
-      var criteria = {
-        "key": "type",
+    if(isFinal) {
+      let final = {
+        "key": "_finalCriteriaData",
         "type": "string",
-        "value": "3"
+        "value": JSON.stringify(qocDataToSend)
       };
+      newList.push(final);
+    } else {
 
-      newList.push(criteria);
 
       let array = {
-        "key" : Date.now()+"criteria",
-        "type" : "string",
-        "value" : JSON.stringify(qocDataToSend)
+        "key": Date.now() + "criteria",
+        "type": "string",
+        "value": JSON.stringify(qocDataToSend)
       };
       newList.push(array);
+    }
 
     /* send data */
     if(this.sendData(newList)){
@@ -488,4 +593,16 @@ console.info(this.data);
     }
 
   }
+
+
+
+}
+
+export class PROCESSSTATE {
+  public QUESTION : string  = "";
+  public ADDOPTION : string = "";
+  public ADDCRITERIA = 2;
+  public MERGEOPTION = 3;
+  public MERGECRITERIA = 4;
+  public READYTORATE = 5;
 }
